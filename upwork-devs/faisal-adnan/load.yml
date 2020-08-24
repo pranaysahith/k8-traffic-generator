@@ -2,7 +2,12 @@ config:
   target: 'https://glasswallsolutions.com'
   phases:
     - duration: 60
-      arrivalRate: 20
+      arrivalRate: 2
+    - duration: 300
+      arrivalRate: 2
+      rampTo: 5
+    - duration: 600
+      arrivalRate: 5            
   defaults:
     headers:
       x-request-id: 'k8-traffic-generator'

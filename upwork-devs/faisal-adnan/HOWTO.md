@@ -1,5 +1,18 @@
 # Quick Start 
-Running testing with the following flow:
+Running testing with the following phases and scenario:
+## Phase
+```mermaid
+graph LR
+    Warm --> Ramp --> Peak
+```
+- Warming up 
+    - Arrival rate of 2 for 60 seconds
+- Ramping up
+    - Arrival rate of 2 to 5 for 300 seconds
+- Peak
+    - Arrival rate of 5 for 600 seconds
+## Scenario
+Each virtual user will do the following:
 - Open https://glasswallsolutions.com/technology
 - Open https://glasswallsolutions.com/products
 - Open https://glasswallsolutions.com/pricing
@@ -17,17 +30,3 @@ Running testing with the following flow:
 ```
     kubectl apply -f artillery.yaml
 ```
-# Customising Test Flow
-## Edit load.yml
-## Build docker file
-```
-    docker build -t <DOCKER_HUB_ACCOUNT>/<IMAGE_NAME>:<VERSION> -f Dockerfile 
-```
-## Push image to Docker Hub
-```
-    docker login --username=<DOCKER_HUB_ACCOUNT>
-    docker push <DOCKER_HUB_ACCOUNT>/<IMAGE_NAME>:<VERSION>
-```
-## Deploy to k8s again
-### Change image name in artillery.yaml to <DOCKER_HUB_ACCOUNT>/<IMAGE_NAME>:<VERSION>
-### Deploy with kubectl

@@ -7,4 +7,4 @@ metadata:
 spec:
   containers:
   - name: gsl-artillery
-    image: peltops/gsl_artillery:latest
+    image: peltops/gsl_artillery:v2
