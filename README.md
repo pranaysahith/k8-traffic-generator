@@ -1,5 +1,19 @@
 # k8-traffic-generator
 
+## Docker Image
+
+Quickly deploy:
+
+`docker run -it --rm yardenshoham/k8-traffic-generator`
+
+### Configuration
+
+Several environment variables may be set for configuration:
+
+| Environment Variable | Description                           | Default                  |
+| -------------------- | ------------------------------------- | ------------------------ |
+| `TARGET_HOST`        | Any Glasswall Solutions website clone | `glasswallsolutions.com` |
+
 If you are working on this project via Upwork, see also our [Upwork Rules of Engagement](https://github.com/filetrust/Open-Source/blob/master/upwork/rules-of-engagement.md)
 
 ### Project brief
