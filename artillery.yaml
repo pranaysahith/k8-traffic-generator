@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: artillery
+  labels:
+    env: test
+spec:
+  containers:
+  - name: gsl-artillery
+    image: peltops/gsl_artillery:latest

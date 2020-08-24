@@ -1,0 +1,20 @@
+config:
+  target: 'https://glasswallsolutions.com'
+  phases:
+    - duration: 60
+      arrivalRate: 20
+  defaults:
+    headers:
+      x-request-id: 'k8-traffic-generator'
+scenarios:
+  - flow:
+    - get:
+        url: "/technology"    
+    - get:
+        url: "/products"
+    - get:
+        url: "/pricing"
+    - get:
+        url: "/resources"
+    - get:
+        url: "/company"        
