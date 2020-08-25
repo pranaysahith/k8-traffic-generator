@@ -16,6 +16,7 @@
   },
   "homepage": "https://github.com/filetrust/k8-traffic-generator#readme",
   "dependencies": {
+    "download-pdf": "^0.1.6",
     "puppeteer": "^5.2.1"
   }
 }
