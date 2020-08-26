@@ -26,7 +26,7 @@ Each virtual user will do the following:
 ```
     minikube start --driver=virtualbox
 ```
-## Deploy artillery
+## Deploy artillery as a job
 ```
-    kubectl apply -f artillery.yaml
+    kubectl apply -f artillery-job.yaml
 ```

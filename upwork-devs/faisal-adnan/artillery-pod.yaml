@@ -6,5 +6,5 @@ metadata:
     env: test
 spec:
   containers:
-  - name: gsl-artillery
-    image: peltops/gsl_artillery:v2
+  - name: artillery
+    image: peltops/gws_artillery:v2
