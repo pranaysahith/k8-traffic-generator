@@ -1,0 +1,36 @@
+config:
+  target: 'https://glasswallsolutions.com'
+  phases:
+    - duration: 6
+      arrivalRate: 2
+    - duration: 30
+      arrivalRate: 2
+      rampTo: 5
+    - duration: 60
+      arrivalRate: 5            
+  defaults:
+    headers:
+      x-request-id: 'k8-traffic-generator'
+  plugins:
+    publish-metrics:
+      - type: statsd
+        host: 127.0.0.1
+        port: 8125     
+        prefix: artillery. 
+scenarios:
+  - flow:
+    - log: "Open technology page"
+    - get:
+        url: "/technology"    
+    - log: "Open products page"    
+    - get:
+        url: "/products"
+    - log: "Open pricing page"    
+    - get:
+        url: "/pricing"
+    - log: "Open resources page"    
+    - get:
+        url: "/resources"
+    - log: "Open company page"    
+    - get:
+        url: "/company"        

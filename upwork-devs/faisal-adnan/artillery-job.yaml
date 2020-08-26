@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: loadtestjob
+  labels:
+    env: test
+spec:
+  template:
+    spec:
+      containers:
+      - name: artillery
+        image: peltops/gws_artillery:v1
+      restartPolicy: Never
