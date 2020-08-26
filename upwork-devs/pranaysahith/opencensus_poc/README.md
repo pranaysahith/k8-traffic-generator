@@ -12,6 +12,6 @@
 
 * Deploy kubernetes manifest file by running - `kubectl apply -f traffic_generator.yaml`
 
-* Open prometheus UI and query for metrics "glasswall_views_home_page_response_bucket" and "glasswall_views_download_brochure_response_bucket"
+* Open prometheus UI and query for metrics "glasswall_views_home_page_response" and "glasswall_views_download_brochure_response"
 
-* Filter metrics based on TEST_ID to get metrics of specific TEST_ID e.g. glasswall_views_home_page_response_bucket{TEST_ID="1002"}
+* Filter metrics based on TEST_ID to get metrics of specific TEST_ID e.g. glasswall_views_home_page_response{TEST_ID="1002"}

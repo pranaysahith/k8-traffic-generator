@@ -39,7 +39,7 @@ spec:
               value: "https://glasswallsolutions.com"
             - name: EXECUTABLE_PATH
               value: "/usr/bin/google-chrome-stable"
-          image: pranaysahith/metrics_generator:0.0.5
+          image: pranaysahith/metrics_generator:0.0.6
           imagePullPolicy: Always
           name: traffic-generator
           resources:
