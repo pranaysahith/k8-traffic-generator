@@ -1,18 +1,18 @@
-## Docker Image
+# Docker Image
 
 Quickly deploy:
 
 `docker run -it --rm yardenshoham/k8-traffic-generator`
 
-### Build
+## Build
 
 `docker build -t k8-traffic-generator .`
 
-### Run
+## Run
 
 `docker run -it --rm k8-traffic-generator`
 
-#### Configuration
+### Configuration
 
 Several environment variables may be set for configuration:
 

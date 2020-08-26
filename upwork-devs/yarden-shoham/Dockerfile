@@ -1,7 +1,7 @@
 FROM node:12
 
 # Install puppeteer dependencies
-RUN apt-get update &&\
+RUN apt-get update && \
     apt-get install -y \
     ca-certificates \
     fonts-liberation \
