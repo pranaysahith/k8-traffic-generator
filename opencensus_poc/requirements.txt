@@ -1,2 +1,3 @@
 opencensus-ext-prometheus
 pyquery
+pyppeteer

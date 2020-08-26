@@ -4,19 +4,25 @@ from pyquery import PyQuery as pq
 import urllib.request
 from datetime import datetime
 
+
 log = logging.getLogger("GW:traffic_g")
 
 
 class TrafficGenerator:
 
     @staticmethod
-    async def home_page(page, url):
+    async def home_page(page, url, ocp):
+        then = datetime.now()
         await page.goto(url)
+        now = datetime.now()
+        time_taken = now - then
+        ocp.set_measurement("home_page", int(time_taken.total_seconds()))
         log.info(f"loaded url : {url}")
 
 
     @staticmethod
-    async def download_brochure(page, url):
+    async def download_brochure(page, url, ocp):
+        then = datetime.now()
         await page.goto(url + "/technology")
         doc = pq(await page.content())
         pdfs = doc.find('a[href*=".pdf"]')
@@ -28,16 +34,19 @@ class TrafficGenerator:
                 pdf_content = f.read()
                 with open(url.split("/")[-1], "wb") as f_writer:
                     f_writer.write(pdf_content)
+        now = datetime.now()
+        time_taken = now - then
+        ocp.set_measurement("download_brochure", int(time_taken.total_seconds()))
+        
 
     @staticmethod
-    async def run(url):
-
+    async def run(url, ocp):
         log.info(f"starting traffic on : {url}")
-        browser = await launch(headless=False)
+        browser = await launch(headless=True)
 
         page = await browser.newPage()
-        m = getattr(TrafficGenerator, "home_page")
-        await m(page, url)
-        m = getattr(TrafficGenerator, "download_brochure")
-        await m(page, url)
+        actions = ["home_page", "download_brochure"]
+        for action in actions:
+            m = getattr(TrafficGenerator, action)
+            await m(page, url, ocp)
         await browser.close()

@@ -33,9 +33,11 @@ spec:
     spec:
       containers:
         - env:
-            - name: ENVIRONMENT
-              value: "dev"
-          image: pranaysahith/metrics_generator:0.0.2
+            - name: TEST_ID
+              value: "1002"
+            - name: BASE_URL
+              value: "https://glasswallsolutions.com"
+          image: pranaysahith/metrics_generator:0.0.3
           imagePullPolicy: Always
           name: metrics-generator
           resources:
