@@ -19,4 +19,4 @@ If you are working on this project via Upwork, see also our [Upwork Rules of Eng
   - locally (using Docker Desktop)
   - EC2 or Azure VM (with K8 installed)
   - Managed EKS (AWS or Azure)
-- implement logging solut
+- implement logging solutions to visualize what is going on inside the K8 environnement (with a special focus on the individual pods actions and the server's responses)
