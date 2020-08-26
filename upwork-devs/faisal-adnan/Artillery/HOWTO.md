@@ -1,3 +1,14 @@
+# Prerequisites
+## Mac OSX
+### Install VirtualBox
+```
+    brew install virtualbox
+```
+### Install minikube
+```
+    brew install minikube
+```
+## Windows 10 (TBD)
 # Quick Start 
 Running testing with the following phases and scenario:
 ## Phase
@@ -18,10 +29,6 @@ Each virtual user will do the following:
 - Open https://glasswallsolutions.com/pricing
 - Open https://glasswallsolutions.com/resources
 - Open https://glasswallsolutions.com/company
-## Install minikube
-```
-    brew install minikube
-```
 ## Start minikube
 ```
     minikube start --driver=virtualbox
