@@ -1,0 +1,12 @@
+version: '3.6'
+services:
+  traffic_generator:
+    image: traffic_generator
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      BASE_URL: "https://glasswallsolutions.com"
+      TEST_ID: "1002"
+    ports:
+      - 8000:8000
