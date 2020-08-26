@@ -68,20 +68,3 @@ spec:
   selector:
     app: metrics-generator
 ---
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: metrics-generator
-  annotations:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/part-of: ingress-nginx
-spec:
-  rules:
-    - host: metrics.sahith.in
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: metrics-generator-service
-              servicePort: 8000
-
