@@ -1,4 +1,5 @@
 **/*.pdf
 .vscode
 **/__pycache__
-**/test_suite
+*.pyc
+*.log
