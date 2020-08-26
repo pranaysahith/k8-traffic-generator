@@ -8,5 +8,6 @@ services:
     environment:
       BASE_URL: "https://glasswallsolutions.com"
       TEST_ID: "1002"
+      EXECUTABLE_PATH: "/usr/bin/google-chrome-stable"
     ports:
       - 8000:8000

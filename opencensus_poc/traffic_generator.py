@@ -3,6 +3,7 @@ from pyppeteer import launch
 from pyquery import PyQuery as pq
 import urllib.request
 from datetime import datetime
+import os
 
 
 log = logging.getLogger("GW:traffic_g")
@@ -42,8 +43,11 @@ class TrafficGenerator:
     @staticmethod
     async def run(url, ocp):
         log.info(f"starting traffic on : {url}")
-        browser = await launch(headless=True)
-
+        browser_path = os.getenv("EXECUTABLE_PATH", None)
+        browser = await launch(executablePath=browser_path, 
+                              args=[
+            '--no-sandbox',
+            '--disable-dev-shm-usage'])
         page = await browser.newPage()
         actions = ["home_page", "download_brochure"]
         for action in actions:

@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: metrics-generator
+    app: traffic-generator
     component: core
-  name: metrics-generator
+  name: traffic-generator
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/path: /metrics
@@ -15,7 +15,7 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      app: metrics-generator
+      app: traffic-generator
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -24,7 +24,7 @@ spec:
   template:
     metadata:
       labels:
-        app: metrics-generator
+        app: traffic-generator
         component: core
       annotations:
         prometheus.io/scrape: "true"
@@ -37,16 +37,18 @@ spec:
               value: "1002"
             - name: BASE_URL
               value: "https://glasswallsolutions.com"
-          image: pranaysahith/metrics_generator:0.0.3
+            - name: EXECUTABLE_PATH
+              value: "/usr/bin/google-chrome-stable"
+          image: pranaysahith/metrics_generator:0.0.5
           imagePullPolicy: Always
-          name: metrics-generator
+          name: traffic-generator
           resources:
             limits:
-              cpu: 100m
-              memory: 100Mi
+              cpu: 500m
+              memory: 500Mi
             requests:
-              cpu: 100m
-              memory: 100Mi
+              cpu: 500m
+              memory: 500Mi
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -57,7 +59,7 @@ status: {}
 apiVersion: v1
 kind: Service
 metadata:
-  name: metrics-generator-service
+  name: traffic-generator-service
 spec:
   type: ClusterIP
   ports:
@@ -66,5 +68,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: metrics-generator
+    app: traffic-generator
 ---
