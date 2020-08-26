@@ -55,6 +55,7 @@ class OpenCensusPrometheus:
         return self.stats_recorder
 
     def create_tags(self, tag_name, tag_value):
+        "create tags to uniquely identify metrics of a particular run"
         tg_key = tag_key_module.TagKey(tag_name)
         tag_value = tag_value_module.TagValue(tag_value)
         self.tag_map.insert(tg_key, tag_value)
@@ -63,7 +64,7 @@ class OpenCensusPrometheus:
         return self.tag_map
 
     def set_measurement(self, measurement_name, measurement):
-        
+        "record measurements and send to prometheus"
         measure_map = self.get_stats_recorder().new_measurement_map()
         measure_map.measure_int_put(self.measurements[measurement_name], measurement)
         measure_map.record(self.get_tag_map())
