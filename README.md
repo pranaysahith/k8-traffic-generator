@@ -11,6 +11,10 @@ If you are working on this project via Upwork, see also our [Upwork Rules of Eng
   - Follow links
   - Upload files
   - Download files
+- initial targets:
+   - https://glasswallsolutions.com/
+   - https://engineering.glasswallsolutions.com/
+   - https://github.com/minio/minio
 - Key concept is to use each K8 pod as an 'user', which depending on some configurable values, will perform a number of pre-determined or random actions
 - Key objective is to be able to use this K8 solution to scale up and down the traffic (which should simply be a case of adding or removing pods from the cluster)
   - key milestone is to be able to find the limitations of a particular ICAP deployment
