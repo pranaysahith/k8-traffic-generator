@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logio
+spec:
+  selector:
+    matchLabels:
+      app: logio
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: logio
+    spec:
+      containers:
+      - name: logio
+        image: ggrig/k8-traffic:logio
+        ports:
+        - containerPort: 6688
