@@ -1,0 +1,22 @@
+{
+  "name": "k8-traffic-generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/filetrust/k8-traffic-generator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/filetrust/k8-traffic-generator/issues"
+  },
+  "homepage": "https://github.com/filetrust/k8-traffic-generator#readme",
+  "dependencies": {
+    "download-pdf": "^0.1.6",
+    "puppeteer": "^5.2.1"
+  }
+}
