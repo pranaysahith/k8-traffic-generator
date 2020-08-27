@@ -9,5 +9,5 @@ spec:
     spec:
       containers:
       - name: artillery
-        image: peltops/gws_artillery:v1
+        image: peltops/gws_artillery:v2
       restartPolicy: Never
