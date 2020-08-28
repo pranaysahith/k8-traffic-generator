@@ -15,6 +15,8 @@ WORKDIR /usr/src/app
 RUN mkdir /root/.log.io
 COPY server.json /root/.log.io/
 
+COPY net-logger.jc .
+
 #RUN npm install
 RUN npm install -g log.io
 
@@ -23,3 +25,4 @@ RUN npm install -g log.io
 
 #EXPOSE 16688
 CMD [ "log.io-server" ]
+#CMD [ "node", "net-logger.jc" ]
