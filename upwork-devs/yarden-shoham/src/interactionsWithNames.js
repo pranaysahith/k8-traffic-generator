@@ -1,6 +1,7 @@
 const PdfTest = require("./pdfTest");
 const PricingCountTest = require("./pricingCountTest");
 const PricingColumnCountTest = require("./pricingColumnCountTest");
+const RandomClickInteraction = require("./randomClickInteraction");
 
 module.exports = [
   {
@@ -14,5 +15,9 @@ module.exports = [
   {
     name: "Check there are exactly 3 price columns (plans) listed",
     interaction: PricingColumnCountTest,
+  },
+  {
+    name: "Click a random button",
+    interaction: RandomClickInteraction,
   },
 ];
