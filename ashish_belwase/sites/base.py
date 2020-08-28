@@ -1,4 +1,5 @@
 import logging
+from pyquery import PyQuery as pq
 
 log = logging.getLogger("GW:traffic_g")
 
@@ -11,6 +12,12 @@ class BaseSite:
     """
 
     Allowed_Methods = ["open", "follow", "download", "upload"]
+
+    @staticmethod
+    async def get_page(page, url):
+        await page.goto(url)
+        doc = pq(await page.content())
+        return doc
 
     @staticmethod
     async def open(page, url):
