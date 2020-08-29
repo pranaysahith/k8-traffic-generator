@@ -24,5 +24,5 @@ RUN npm install -g log.io
 #COPY . .
 
 #EXPOSE 16688
-CMD [ "log.io-server" ]
-#CMD [ "node", "net-logger.jc" ]
+#CMD [ "log.io-server" ]
+CMD [ "node", "net-logger.jc" ]

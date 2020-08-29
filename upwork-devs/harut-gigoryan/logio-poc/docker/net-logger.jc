@@ -1,4 +1,5 @@
 var net = require('net');
+const { exec } = require("child_process");
 
 function RandomInt(max_val) {
    return Math.floor(Math.random() * max_val);
@@ -27,7 +28,7 @@ function sendlogs() {
 
 		try {
                    for (i=0; i<20; i++) {
-                      source = '|stream' + RandomInt(3) + '|source' + RandomInt(6);
+                      source = '|pod_' + RandomInt(3) + '|module_' + RandomInt(6);
 
                       client.write('+input' + source + '\0');
                       client.write('+msg' + source + '|' + makeid(RandomInt(150)) + '\0');
@@ -57,10 +58,17 @@ function sendlogs() {
 
 }
 
+
+exec("log.io-server", (error, stdout, stderr) => {
+    if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+    }
+    console.log(`stdout: ${stdout}`);
+});
+
 setInterval(sendlogs,500);
-
-
-
-
-
-
