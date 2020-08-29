@@ -9,6 +9,7 @@
 ```cmd
 python main.py -u https://glasswallsolutions.com -a open
 python main.py -u https://glasswallsolutions.com -a download
+python main.py -u https://glasswallsolutions.com  // perform random action
 ```
 
 ### Run UnitTests

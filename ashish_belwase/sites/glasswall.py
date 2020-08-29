@@ -15,6 +15,11 @@ class Glasswallsolutions(BaseSite):
         "random_click",
     ]
 
+    def get_rand_action():
+        return Glasswallsolutions.Allowed_Methods[
+            randrange(0, len(Glasswallsolutions.Allowed_Methods))
+        ]
+
     @staticmethod
     async def download_pdf(page, url):
         doc = await BaseSite.get_page(page, url)
@@ -54,8 +59,6 @@ class Glasswallsolutions(BaseSite):
         doc = await BaseSite.get_page(page, url)
         buttons = await page.querySelectorAll("a[class^='btn'],a.button")
         btn = buttons[randrange(0, len(buttons))]
-        is_visible = await btn.isIntersectingViewport()
-        attempt = 0
         if not await BaseSite.wait_for_element(btn):
             return
 
