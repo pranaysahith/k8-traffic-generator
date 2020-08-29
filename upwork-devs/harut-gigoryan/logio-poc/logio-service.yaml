@@ -6,8 +6,8 @@ metadata:
 spec:
   ports:
     - protocol: TCP
-      port: 6688
-      targetPort: 6688
+      port: 16688
+      targetPort: 16688
   selector:
     app: logio
   type: LoadBalancer

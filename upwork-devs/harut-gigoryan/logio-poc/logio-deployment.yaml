@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: logio
-        image: ggrig/k8-traffic:logio
+        image: ggrig/k8-traffic:logio-v2
         ports:
-        - containerPort: 6688
+        - containerPort: 16688
