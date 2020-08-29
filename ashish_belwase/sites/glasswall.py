@@ -1,5 +1,5 @@
 import logging
-
+from random import randrange
 from helper import Helper
 from .base import BaseSite
 
@@ -8,7 +8,12 @@ log = logging.getLogger("GW:traffic_g")
 
 class Glasswallsolutions(BaseSite):
 
-    Allowed_Methods = BaseSite.Allowed_Methods + ["products", "pricing", "company"]
+    Allowed_Methods = BaseSite.Allowed_Methods + [
+        "products",
+        "pricing",
+        "company",
+        "random_click",
+    ]
 
     @staticmethod
     async def download_pdf(page, url):
@@ -43,3 +48,17 @@ class Glasswallsolutions(BaseSite):
         doc = await BaseSite.get_page(page, url + "/company")
         team = doc.find("div.team__profile__tile")
         return team
+
+    @staticmethod
+    async def random_click(page, url):
+        doc = await BaseSite.get_page(page, url)
+        buttons = await page.querySelectorAll("a[class^='btn'],a.button")
+        btn = buttons[randrange(0, len(buttons))]
+        is_visible = await btn.isIntersectingViewport()
+        attempt = 0
+        if not await BaseSite.wait_for_element(btn):
+            return
+
+        await btn.click()
+        await page.waitFor(BaseSite.DEFAULT_PAGE_WAIT)
+        # await page.screenshot({"path": "page2.png"})
