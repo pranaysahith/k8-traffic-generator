@@ -18,8 +18,8 @@ class Interaction {
         ]
       );
 
-      // wait some time, between half a second to five seconds between interactions
-      await Utils.delay(500 + Math.floor(Math.random() * 4500));
+      // wait up to one second between interactions
+      await Utils.delay(Math.floor(Math.random() * 1000));
     }
   }
 }
