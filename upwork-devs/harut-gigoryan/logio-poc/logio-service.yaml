@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: logio
+  namespace: default
+spec:
+  ports:
+    - protocol: TCP
+      port: 16688
+      targetPort: 16688
+  selector:
+    app: logio
+  type: LoadBalancer
+  
