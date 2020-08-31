@@ -1,9 +1,13 @@
-FROM node:12
+FROM mhart/alpine-node:12
 
 RUN npm install -g artillery --allow-root --unsafe-perm=true
 RUN npm install -g artillery-plugin-publish-metrics
 
-COPY artillery-conf.yml /conf.yml
+WORKDIR /mnt/workspace
 
-CMD artillery run /conf.yml
+RUN wget -qO /usr/bin/mc https://dl.min.io/client/mc/release/linux-amd64/mc
+RUN chmod +x /usr/bin/mc
+
+COPY artillery.sh /mnt/workspace/.
+RUN chmod +x /mnt/workspace/artillery.sh
 

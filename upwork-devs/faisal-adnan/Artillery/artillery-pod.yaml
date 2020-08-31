@@ -7,4 +7,26 @@ metadata:
 spec:
   containers:
   - name: artillery
-    image: peltops/gws_artillery:v2
+    image: peltops/gws_artillery:v3
+    imagePullPolicy: Always
+    env:
+      - name: MINIO_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: minio-creds-secret
+            key: accesskey 
+      - name: MINIO_SECRET_KEY
+        valueFrom:
+          secretKeyRef:
+            name: minio-creds-secret
+            key: secretkey                    
+    workingDir: "/mnt/workspace"
+    command: [ "/bin/sh", "-c", "/mnt/workspace/artillery.sh" ]
+    volumeMounts:
+    - name: artilleryvol
+      mountPath: "/etc/conf"
+      readOnly: true
+  volumes:
+  - name: artilleryvol
+    secret:
+      secretName: artilleryconf      
