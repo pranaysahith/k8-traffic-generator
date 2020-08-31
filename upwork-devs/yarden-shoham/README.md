@@ -17,9 +17,13 @@ Quickly deploy:
 
 ### Build
 
+To build the Docker image and name it `k8-traffic-generator` run:
+
 `docker build -t k8-traffic-generator .`
 
 ### Run
+
+To run the aforementioned built image run:
 
 `docker run -it --rm k8-traffic-generator`
 
@@ -30,3 +34,19 @@ Several environment variables may be set for configuration:
 | Environment Variable | Description                           | Default                  |
 | -------------------- | ------------------------------------- | ------------------------ |
 | `TARGET_HOST`        | Any Glasswall Solutions website clone | `glasswallsolutions.com` |
+
+## Helm Chart
+
+### Installing
+
+To install the Helm chart run:
+
+`helm install glasswall chart`
+
+#### Configuration
+
+Several parameters may be set for configuration:
+
+| Parameter    | Description                           | Default                  |
+| ------------ | ------------------------------------- | ------------------------ |
+| `targetHost` | Any Glasswall Solutions website clone | `glasswallsolutions.com` |
