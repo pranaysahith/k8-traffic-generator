@@ -1,0 +1,6 @@
+**
+
+!*.py
+!sites
+!tests
+!requirements.txt
