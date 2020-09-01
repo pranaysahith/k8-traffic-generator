@@ -1,12 +1,12 @@
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-  name: quickstart
+  name: quickstart-multipod
 spec:
   version: 7.9.0
   nodeSets:
   - name: default
-    count: 1
+    count: 2
     config:
       node.master: true
       node.data: true
@@ -20,27 +20,27 @@ spec:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 10Gi       
+            storage: 1Ti      
 ---
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
-  name: quickstart
+  name: quickstart-multipod
 spec:
   version: 7.9.0
   count: 1
   elasticsearchRef:
-    name: quickstart
+    name: quickstart-multipod
 ---
 apiVersion: beat.k8s.elastic.co/v1beta1
 kind: Beat
 metadata:
-  name: quickstart
+  name: quickstart-multipod
 spec:
   type: filebeat
   version: 7.9.0
   elasticsearchRef:
-    name: quickstart
+    name: quickstart-multipod
   config:
     filebeat.inputs:
     - type: container
