@@ -13,12 +13,3 @@ class TestMain(TestCase):
 
     def tearDown(self):
         pass
-
-    def test_get_command_line_args(self):
-        action = "open"
-        url = "https://glasswallsolutions.com"
-        testargs = ["python", "-u", url, "-a", action]
-        with patch.object(sys, "argv", testargs):
-            args = Main.get_command_line_args()
-            self.assertEqual(args.action, action)
-            self.assertEqual(args.url, url)

@@ -7,7 +7,7 @@ from sites.glasswall import Glasswallsolutions
 
 class TestGlassWall(TestCase):
     def setUp(self):
-        self.browser = sync(launch())
+        self.browser = sync(launch(args=['--no-sandbox']))
         self.url = "https://glasswallsolutions.com"
 
     def tearDown(self):
