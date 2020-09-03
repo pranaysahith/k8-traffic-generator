@@ -1,0 +1,13 @@
+frontend:
+  image:
+    registry: docker.io
+    repository: yardenshoham/file-drop-frontend
+    tag: latest
+  replicaCount: 1
+
+backend:
+  image:
+    registry: docker.io
+    repository: yardenshoham/file-drop-backend
+    tag: latest
+  replicaCount: 1

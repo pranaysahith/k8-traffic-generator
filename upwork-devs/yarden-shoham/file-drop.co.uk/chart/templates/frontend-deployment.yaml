@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-drop-traffic-generator-frontend
+  labels:
+    app: file-drop-traffic-generator-frontend
+spec:
+  replicas: {{ .Values.frontend.replicaCount }}
+  selector:
+    matchLabels:
+      app: file-drop-traffic-generator-frontend
+  template:
+    metadata:
+      name: file-drop-traffic-generator-frontend
+      labels:
+        app: file-drop-traffic-generator-frontend
+    spec:
+      containers:
+        - name: file-drop-traffic-generator-frontend
+          image: {{ .Values.frontend.image.registry }}/{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
