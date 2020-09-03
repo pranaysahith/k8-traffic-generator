@@ -10,7 +10,6 @@ class Scheduler:
 
     @staticmethod
     def __save_file(file):
-        print(file.filename)
         file.save(f"/usr/src/app/backend/static/{file.filename}")
 
 
