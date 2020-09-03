@@ -26,3 +26,6 @@ spec:
             httpGet:
               path: /backend/health
               port: 5000
+          env:
+            - name: API_TOKEN
+              value: {{ quote .Values.backend.apiToken }}
