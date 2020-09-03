@@ -1,5 +1,20 @@
 from flask import Flask, request
-app = Flask(__name__)
+import os
+
+
+class Scheduler:
+    @staticmethod
+    def schedule(files):
+        for file in files:
+            Scheduler.__save_file(file)
+
+    @staticmethod
+    def __save_file(file):
+        print(file.filename)
+        file.save(f"/usr/src/app/backend/static/{file.filename}")
+
+
+app = Flask(import_name=__name__, static_url_path="/backend/static")
 
 
 @app.route('/backend/health')
@@ -10,7 +25,7 @@ def health():
 @app.route("/backend/files", methods=["POST"])
 def upload():
     uploaded_files = request.files.getlist("files[]")
-    print(uploaded_files)
+    Scheduler.schedule(uploaded_files)
     return ""
 
 
