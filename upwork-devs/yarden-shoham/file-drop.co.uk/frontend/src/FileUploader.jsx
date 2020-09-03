@@ -3,18 +3,15 @@ import { useDropzone } from "react-dropzone";
 
 export default function FileUploader() {
   const onDrop = useCallback((acceptedFiles) => {
-    alert("Thank you, the files were uploaded!");
-    acceptedFiles.forEach((file) => {
-      const reader = new FileReader();
+    const data = new FormData();
 
-      reader.onabort = () => console.log("file reading was aborted");
-      reader.onerror = () => console.log("file reading has failed");
-      reader.onload = () => {
-        // Do whatever you want with the file contents
-        const binaryStr = reader.result;
-        console.log(binaryStr);
-      };
-      reader.readAsArrayBuffer(file);
+    for (const file of acceptedFiles) {
+      data.append("files[]", file, file.name);
+    }
+
+    return fetch("/backend/files", {
+      method: "POST",
+      body: data,
     });
   }, []);
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
