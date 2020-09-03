@@ -1,6 +1,6 @@
 
 
-#The Workflow
+# The Workflow
 ## Traffic generation by a POD
 The PODs in k8 traffic generation deployments will generate traffic based on scenario files. Each instruction line in a scenario file defines the action to be taken (open a page, follow a link, upload a file, download a file), the URL, and if necessary the data (for instance, location of the file to be uploaded). 
 
