@@ -2,6 +2,6 @@ FROM python:3-alpine
 EXPOSE 5000
 WORKDIR /usr/src/app
 COPY requirements.txt .
-RUN mkdir -p backend/static && mkdir /yamls && pip install -r requirements.txt
+RUN mkdir -p backend/static && pip install -r requirements.txt
 COPY . .
 CMD [ "python", "backend" ]
