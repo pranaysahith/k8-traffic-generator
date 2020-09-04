@@ -33,7 +33,7 @@ class TrafficGenerator:
 
         log.info(f"starting traffic on : {url} , action : {action}")
 
-        browser = await launch()
+        browser = await launch(args=['--no-sandbox'])
         page = await browser.newPage()
         m = getattr(site, action)
         await m(page, url)

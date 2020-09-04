@@ -1,0 +1,7 @@
+**
+
+!*.py
+!sites
+!tests
+!requirements.txt
+!docker-entrypoint.sh

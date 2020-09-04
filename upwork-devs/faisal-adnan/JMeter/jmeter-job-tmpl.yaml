@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: jmeterjob-$NO
+  labels:
+    env: test
+    jobgroup: jmeter
+spec:
+  ttlSecondsAfterFinished: 60
+  template:
+    metadata:
+      name: jmeter
+      labels:
+        jobgroup: jmeter  
+    spec:
+      containers:
+      - name: jmeter
+        image: peltops/gws_jmeter:v2
+        imagePullPolicy: Always
+        env:
+          - name: MINIO_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: minio-creds-secret
+                key: accesskey 
+          - name: MINIO_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: minio-creds-secret
+                key: secretkey           
+        workingDir: /mnt/workspace
+        command: [ "/bin/sh", "-c", "/mnt/workspace/jmeter.sh" ]
+        volumeMounts:
+        - name: jmetervol
+          mountPath: "/etc/conf"
+          readOnly: true
+      volumes:
+      - name: jmetervol
+        secret:
+          secretName: jmeterconf          
+      restartPolicy: Never
