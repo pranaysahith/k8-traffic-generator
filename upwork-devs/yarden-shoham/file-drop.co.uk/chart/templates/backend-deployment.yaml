@@ -5,7 +5,7 @@ metadata:
   labels:
     app: file-drop-traffic-generator-backend
 spec:
-  replicas: {{ .Values.backend.replicaCount }}
+  replicas: 1
   selector:
     matchLabels:
       app: file-drop-traffic-generator-backend
@@ -28,4 +28,4 @@ spec:
               port: 5000
           env:
             - name: API_TOKEN
-              value: {{ quote .Values.backend.apiToken }}
+              value: {{ quote .Values.apiToken }}

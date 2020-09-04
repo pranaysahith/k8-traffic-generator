@@ -10,5 +10,5 @@ backend:
     registry: docker.io
     repository: yardenshoham/file-drop-backend
     tag: latest
-  replicaCount: 1
-  apiToken: null
+
+apiToken: null
