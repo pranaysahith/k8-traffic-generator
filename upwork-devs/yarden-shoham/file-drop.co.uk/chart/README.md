@@ -8,7 +8,7 @@ This chart deploys an `Ingress` so the cluster should have [`ingress-nginx`](htt
 
 `helm install fd . --set apiToken="YOUR_REBUILD_API_TOKEN"`
 
-## Configuration
+### Configuration
 
 Several values may be set for configuration:
 
