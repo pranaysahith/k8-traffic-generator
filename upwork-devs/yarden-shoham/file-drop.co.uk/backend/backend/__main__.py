@@ -19,27 +19,18 @@ class Scheduler:
     def __schedule_job_in_kubernetes(file):
         job_name = f"file-drop-{uuid.uuid1()}"
 
+        envs = [client.V1EnvVar(
+                name="API_TOKEN", value=os.getenv("API_TOKEN")), client.V1EnvVar(
+                name="TARGET", value=f"http://file-drop-traffic-generator-backend:5000/backend/static/{file.filename}")]
+
         processor_container = client.V1Container(
             name="processor",
             image="yardenshoham/file-drop-processor",
-            env=[client.V1EnvVar(
-                name="API_TOKEN", value=os.getenv("API_TOKEN"))],
-            volume_mounts=[client.V1VolumeMount(
-                name="data", mount_path="/input")])
-
-        downloader_container = client.V1Container(
-            name="downloader",
-            image="yardenshoham/file-drop-downloader",
-            env=[client.V1EnvVar(
-                name="TARGET", value=f"http://file-drop-traffic-generator-backend:5000/backend/static/{file.filename}")],
-            volume_mounts=[client.V1VolumeMount(
-                name="data", mount_path="/output")])
+            env=envs)
 
         pod_spec = client.V1PodSpec(
             restart_policy="OnFailure",
-            containers=[processor_container],
-            init_containers=[downloader_container],
-            volumes=[client.V1Volume(name="data", empty_dir=client.V1EmptyDirVolumeSource())])
+            containers=[processor_container])
 
         # Create and configure a spec section
         template = client.V1PodTemplateSpec(
