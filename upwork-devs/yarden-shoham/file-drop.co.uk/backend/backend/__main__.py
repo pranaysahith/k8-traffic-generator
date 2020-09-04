@@ -30,7 +30,7 @@ class Scheduler:
             env=envs)
 
         pod_spec = client.V1PodSpec(
-            restart_policy="OnFailure",
+            restart_policy="Never",
             containers=[processor_container])
 
         # Create and configure a spec section
