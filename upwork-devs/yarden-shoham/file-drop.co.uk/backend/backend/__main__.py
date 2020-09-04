@@ -10,19 +10,20 @@ class Scheduler:
         for file in files:
             file_identifier = f"file-drop-{uuid.uuid1()}"
             Scheduler.__save_file(file, file_identifier)
-            Scheduler.__schedule_job_in_kubernetes(file_identifier)
+            Scheduler.__schedule_job_in_kubernetes(file, file_identifier)
 
     @staticmethod
     def __save_file(file, file_identifier):
         file.save(f"/usr/src/app/backend/static/{file_identifier}")
 
     @staticmethod
-    def __schedule_job_in_kubernetes(file_identifier):
+    def __schedule_job_in_kubernetes(file, file_identifier):
         job_name = file_identifier
 
         envs = [client.V1EnvVar(
                 name="API_TOKEN", value=os.getenv("API_TOKEN")), client.V1EnvVar(
-                name="TARGET", value=f"http://file-drop-traffic-generator-backend:5000/backend/static/{file_identifier}")]
+                name="TARGET", value=f"http://file-drop-traffic-generator-backend:5000/backend/static/{file_identifier}"), client.V1EnvVar(
+                name="FILENAME", value=file.filename)]
 
         processor_container = client.V1Container(
             name="processor",
