@@ -1,21 +1,21 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: artilleryjob
+  name: jmeterjob-$NO
   labels:
     env: test
-    jobgroup: artillery
+    jobgroup: jmeter
 spec:
   ttlSecondsAfterFinished: 60
   template:
     metadata:
-      name: artillery
+      name: jmeter
       labels:
-        jobgroup: artillery
+        jobgroup: jmeter  
     spec:
       containers:
-      - name: artillery
-        image: peltops/gws_artillery:v3
+      - name: jmeter
+        image: peltops/gws_jmeter:v2
         imagePullPolicy: Always
         env:
           - name: MINIO_ACCESS_KEY
@@ -29,13 +29,13 @@ spec:
                 name: minio-creds-secret
                 key: secretkey           
         workingDir: /mnt/workspace
-        command: [ "/bin/sh", "-c", "/mnt/workspace/artillery.sh" ]
+        command: [ "/bin/sh", "-c", "/mnt/workspace/jmeter.sh" ]
         volumeMounts:
-        - name: artilleryvol
+        - name: jmetervol
           mountPath: "/etc/conf"
           readOnly: true
       volumes:
-      - name: artilleryvol
+      - name: jmetervol
         secret:
-          secretName: artilleryconf  
-      restartPolicy: Never  
+          secretName: jmeterconf          
+      restartPolicy: Never

@@ -1,41 +1,52 @@
 # Artillery PoC
 Create a pod that executes test using Artillery
-# Prerequisites
-## Mac OSX
-### Install VirtualBox
-```
-    brew install virtualbox
-```
-### Install minikube
-```
-    brew install minikube
-```
-## Windows 10 (TBD)
 # Quick Start 
-Running testing with the following phases and scenario:
-## Phase
-```mermaid
-graph LR
-    Warm --> Ramp --> Peak
+This project execute a test scenario by running it in 1 to N pods.
+The pod generates the following data:
+1. The test log is shipped to ELK
+2. The test report is uploaded to Minio.
+3. The http tracing is sent to Zipkin or Jaeger.
+
+See the diagram below:
+
+```ditaa {cmd=true args=["-E"]}
++----+-----+            +-------------------------------------------+
+| Scenario |            | K8S                    +-----------+      |
+| File     |            |                        |           |      |   
+| {d}      |            |         +------------->|  Jaeger   |      |  
++----+-----+            |         |              |   (WIP)   |      |
+     |                  |         |              +-----------+      |
+     |                  |         |                                 |
+     |        Deploy    |         |                                 |
++----+-----+  to 1 - N  |   +-----+-----+        +-----------+      |
+|          |  pods      |   |   Istio   |        |           |      |
+| Shell    +----------->|   | side car  | report |           |      |
+| Script   |            |   +-----------+------->|   Minio   |      |
+|          |            |   | Artillery |        |           |      |
+|          |            |   |    Pod    |        |           |      |
++----+-----+            |   +-+----+----+        +-----------+      |
+                        |     ^    |                                |
+                        |     |    |             +-----------+      |
+                        |     |    |             |           |      |
+                        |     |    |   logging   |           |      |
+                        |     |    +------------>|    ELK    |      |
+                        |     |                  |           |      |
+                        |   +-+---------+        |           |      |
+                        |   |   Vault   |        +-----------+      |
+                        |   |   for     |                           |
+                        |   |   Scenario|                           |
+                        |   |   file    |                           |
+                        |   |   and     |                           |
+                        |   |   secrets |                           |
+                        |   +-----------+                           |
+                        +-------------------------------------------+
+
 ```
-- Warming up 
-    - Arrival rate of 2 for 60 seconds
-- Ramping up
-    - Arrival rate of 2 to 5 for 300 seconds
-- Peak
-    - Arrival rate of 5 for 600 seconds
-## Scenario
-Each virtual user will do the following:
-- Open https://glasswallsolutions.com/technology
-- Open https://glasswallsolutions.com/products
-- Open https://glasswallsolutions.com/pricing
-- Open https://glasswallsolutions.com/resources
-- Open https://glasswallsolutions.com/company
 ## Start minikube
 ```
-    minikube start --driver=virtualbox
+    minikube start --feature-gates=TTLAfterFinished=true --driver=virtualbox
 ```
 ## Deploy artillery as a job
 ```
-    kubectl apply -f artillery-job.yaml
+    sh run.sh <artillery_config_file> <number_of_pods>
 ```

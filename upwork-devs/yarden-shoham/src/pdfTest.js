@@ -2,7 +2,6 @@ const Interaction = require("./interaction");
 const puppeteer = require("puppeteer");
 const fs = require("fs");
 const download = require("download-pdf");
-
 const Utils = require("./utils");
 
 class PdfTest extends Interaction {

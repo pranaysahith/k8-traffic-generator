@@ -11,9 +11,15 @@ Running ELK Stack on Minikube
 ```
 ### Deploy ELK. This may take 5+ minutes.
 ```
-    kubectl apply -f elk/tenant.yml
+    kubectl apply -f tenant.yml
 ```
-### Open Kibana on http://localhost:5601
+### Check the credentials
+Username: elastic
+Password: see command below
+```
+    kubectl get secret quickstart-es-elastic-user -o go-template='{{.data.elastic | base64decode}}'
+```
+### Open Kibana on https://localhost:5601
 ```
     kubectl port-forward service/quickstart-kb-http 5601
 ```

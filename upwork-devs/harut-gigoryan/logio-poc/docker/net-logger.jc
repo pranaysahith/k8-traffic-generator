@@ -1,0 +1,74 @@
+var net = require('net');
+const { exec } = require("child_process");
+
+function RandomInt(max_val) {
+   return Math.floor(Math.random() * max_val);
+}
+
+function makeid(length) {
+   var result           = '';
+   var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+   var charactersLength = characters.length;
+   for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   }
+   return result;
+}
+
+function handleErrors(err) {
+   console.log("Socket error");
+}
+
+
+function sendlogs() {
+
+	var client = new net.Socket();
+	client.connect(16689, '127.0.0.1', function() {
+		console.log('Connected');
+
+		try {
+                   for (i=0; i<20; i++) {
+                      source = '|pod_' + RandomInt(3) + '|module_' + RandomInt(6);
+
+                      client.write('+input' + source + '\0');
+                      client.write('+msg' + source + '|' + makeid(RandomInt(150)) + '\0');
+                      client.write('+input' + source + '\0');
+                   }
+		}
+		catch (e) {
+		   console.log("Failed sending a log");	
+		}
+		finally {
+		   client.destroy(); 
+		}
+
+	});
+
+	client.on('data', function(data) {
+		console.log('Received: ' + data);
+	});
+
+	client.on('close', function() {
+		console.log('Connection closed');
+	});
+
+	client.on('error', function(err){
+	    console.log("Error: "+err.message);
+	})
+
+}
+
+
+exec("log.io-server", (error, stdout, stderr) => {
+    if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+    }
+    console.log(`stdout: ${stdout}`);
+});
+
+setInterval(sendlogs,500);

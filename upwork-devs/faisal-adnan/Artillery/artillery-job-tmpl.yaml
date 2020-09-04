@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: artilleryjob
+  name: artilleryjob-$NO
   labels:
     env: test
     jobgroup: artillery
@@ -11,7 +11,7 @@ spec:
     metadata:
       name: artillery
       labels:
-        jobgroup: artillery
+        jobgroup: artillery  
     spec:
       containers:
       - name: artillery
