@@ -6,13 +6,15 @@ This chart deploys an `Ingress` so the cluster should have [`ingress-nginx`](htt
 
 ## Deploy
 
-`helm install fd . --set apiToken="YOUR_REBUILD_API_TOKEN"`
+```bash
+.../file-drop.co.uk$ helm install fd chart --set apiToken="YOUR_REBUILD_API_TOKEN"
+```
 
 ### Configuration
 
 Several values may be set for configuration:
 
-| Environment Variable        | Description                            | Default                           |
+| Parameter                   | Description                            | Default                           |
 | --------------------------- | -------------------------------------- | --------------------------------- |
 | `apiToken`                  | Glasswall Rebuild API token            | `null`                            |
 | `frontend.image.registry`   | Frontend image registry                | `docker.io` (Docker Hub)          |

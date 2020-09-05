@@ -8,6 +8,6 @@
 
 Several values may be set for configuration:
 
-| Environment Variable | Description                           | Default                  |
-| -------------------- | ------------------------------------- | ------------------------ |
-| `targetHost`         | Any Glasswall Solutions website clone | `glasswallsolutions.com` |
+| Parameter    | Description                           | Default                  |
+| ------------ | ------------------------------------- | ------------------------ |
+| `targetHost` | Any Glasswall Solutions website clone | `glasswallsolutions.com` |
