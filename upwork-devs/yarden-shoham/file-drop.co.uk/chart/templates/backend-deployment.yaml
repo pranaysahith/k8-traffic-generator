@@ -28,4 +28,6 @@ spec:
               port: 5000
           env:
             - name: API_TOKEN
-              value: {{ quote .Values.apiToken }}
+              value: {{ quote .Values.api.token }}
+            - name: API_URL
+              value: {{ quote .Values.api.url }}

@@ -11,4 +11,6 @@ backend:
     repository: yardenshoham/file-drop-backend
     tag: latest
 
-apiToken: null
+api:
+  url: https://gzlhbtpvk2.execute-api.eu-west-1.amazonaws.com/Prod/api/rebuild/file
+  token: null

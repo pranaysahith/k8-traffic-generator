@@ -23,7 +23,9 @@ class Scheduler:
         envs = [client.V1EnvVar(
                 name="API_TOKEN", value=os.getenv("API_TOKEN")), client.V1EnvVar(
                 name="TARGET", value=f"http://file-drop-traffic-generator-backend:5000/backend/static/{file_identifier}"), client.V1EnvVar(
-                name="FILENAME", value=file.filename)]
+                name="FILENAME", value=file.filename), client.V1EnvVar(
+                name="API_URL", value=os.getenv("API_URL")
+                )]
 
         processor_container = client.V1Container(
             name="processor",

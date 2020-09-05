@@ -3,7 +3,7 @@ import requests
 import urllib.request
 
 jwt_token = os.getenv("API_TOKEN")
-url = "https://gzlhbtpvk2.execute-api.eu-west-1.amazonaws.com/Prod/api/rebuild/file"
+url = os.getenv("API_URL")
 target = os.getenv("TARGET")
 
 local_filename, _ = urllib.request.urlretrieve(target)
