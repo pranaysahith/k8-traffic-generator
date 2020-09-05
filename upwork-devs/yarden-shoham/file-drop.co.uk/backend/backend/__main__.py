@@ -43,7 +43,8 @@ class Scheduler:
 
         # Create the specification of the job
         spec = client.V1JobSpec(
-            template=template)
+            template=template,
+            backoff_limit=0)
 
         # Instantiate the job object
         job = client.V1Job(
