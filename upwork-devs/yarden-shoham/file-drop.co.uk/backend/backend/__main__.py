@@ -29,7 +29,7 @@ class Scheduler:
 
         processor_container = client.V1Container(
             name="processor",
-            image="yardenshoham/file-drop-processor",
+            image=os.getenv("PROCESSOR_IMAGE"),
             env=envs)
 
         pod_spec = client.V1PodSpec(

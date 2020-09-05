@@ -31,3 +31,5 @@ spec:
               value: {{ quote .Values.api.token }}
             - name: API_URL
               value: {{ quote .Values.api.url }}
+            - name: PROCESSOR_IMAGE
+              value: {{ .Values.processor.image.registry }}/{{ .Values.processor.image.repository }}:{{ .Values.processor.image.tag }}

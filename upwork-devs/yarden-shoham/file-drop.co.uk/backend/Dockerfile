@@ -4,5 +4,6 @@ WORKDIR /usr/src/app
 COPY requirements.txt .
 RUN mkdir -p backend/static && pip install -r requirements.txt
 COPY . .
-ENV API_URL https://gzlhbtpvk2.execute-api.eu-west-1.amazonaws.com/Prod/api/rebuild/file
+ENV API_URL=https://gzlhbtpvk2.execute-api.eu-west-1.amazonaws.com/Prod/api/rebuild/file \
+    PROCESSOR_IMAGE=yardenshoham/file-drop-processor
 CMD [ "python", "backend" ]
