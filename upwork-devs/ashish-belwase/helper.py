@@ -9,6 +9,8 @@ class Helper:
     def get_domain_from_url(url):
         parsed_uri = urlparse(url)
         domain = "{uri.netloc}".format(uri=parsed_uri)
+        domain = domain.rsplit(".", 1)[0]
+        domain = domain.replace(".", "")
         return domain
 
     @staticmethod
