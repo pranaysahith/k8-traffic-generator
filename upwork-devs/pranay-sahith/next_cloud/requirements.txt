@@ -1,2 +1,2 @@
-aioeasywebdav==2.4.0
 opencensus-ext-prometheus==0.2.1
+pyppeteer==0.2.2
