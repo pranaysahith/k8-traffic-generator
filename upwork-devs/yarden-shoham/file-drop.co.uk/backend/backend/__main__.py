@@ -1,62 +1,61 @@
-from flask import Flask, request, render_template
+from flask import Flask, request
 from kubernetes import client, config
 import os
 import uuid
+import json
 
 
-class Scheduler:
-    @staticmethod
-    def schedule(files):
-        for file in files:
-            file_identifier = f"file-drop-{uuid.uuid1()}"
-            Scheduler.__save_file(file, file_identifier)
-            Scheduler.__schedule_job_in_kubernetes(file, file_identifier)
+def schedule(files):
+    for file in files:
+        file_identifier = f"file-drop-{uuid.uuid1()}"
+        save_file(file, file_identifier)
+        schedule_job_in_kubernetes(file, file_identifier)
 
-    @staticmethod
-    def __save_file(file, file_identifier):
-        file.save(f"/usr/src/app/backend/static/{file_identifier}")
 
-    @staticmethod
-    def __schedule_job_in_kubernetes(file, file_identifier):
-        job_name = file_identifier
+def save_file(file, file_identifier):
+    file.save(f"/usr/src/app/backend/static/{file_identifier}")
 
-        envs = [client.V1EnvVar(
-                name="API_TOKEN", value=os.getenv("API_TOKEN")), client.V1EnvVar(
-                name="TARGET", value=f"http://file-drop-traffic-generator-backend:5000/backend/static/{file_identifier}"), client.V1EnvVar(
-                name="FILENAME", value=file.filename), client.V1EnvVar(
-                name="API_URL", value=os.getenv("API_URL")
-                )]
 
-        processor_container = client.V1Container(
-            name="processor",
-            image=os.getenv("PROCESSOR_IMAGE"),
-            env=envs)
+def schedule_job_in_kubernetes(file, file_identifier):
+    job_name = file_identifier
 
-        pod_spec = client.V1PodSpec(
-            restart_policy="Never",
-            containers=[processor_container])
+    envs = [client.V1EnvVar(
+            name="API_TOKEN", value=os.getenv("API_TOKEN")), client.V1EnvVar(
+            name="TARGET", value=f"http://file-drop-traffic-generator-backend:5000/backend/static/{file_identifier}"), client.V1EnvVar(
+            name="FILENAME", value=file.filename), client.V1EnvVar(
+            name="API_URL", value=os.getenv("API_URL")
+            )]
 
-        # Create and configure a spec section
-        template = client.V1PodTemplateSpec(
-            metadata=client.V1ObjectMeta(name=job_name),
-            spec=pod_spec)
+    processor_container = client.V1Container(
+        name="processor",
+        image=os.getenv("PROCESSOR_IMAGE"),
+        env=envs)
 
-        # Create the specification of the job
-        spec = client.V1JobSpec(
-            template=template,
-            backoff_limit=0)
+    pod_spec = client.V1PodSpec(
+        restart_policy="Never",
+        containers=[processor_container])
 
-        # Instantiate the job object
-        job = client.V1Job(
-            api_version="batch/v1",
-            kind="Job",
-            metadata=client.V1ObjectMeta(name=job_name),
-            spec=spec)
+    # Create and configure a spec section
+    template = client.V1PodTemplateSpec(
+        metadata=client.V1ObjectMeta(name=job_name, labels={
+                                     "app": "file-drop-processor"}),
+        spec=pod_spec)
 
-        client.BatchV1Api().create_namespaced_job(
-            body=job,
-            namespace="default")
-        print(job_name)
+    # Create the specification of the job
+    spec = client.V1JobSpec(
+        template=template,
+        backoff_limit=0)
+
+    # Instantiate the job object
+    job = client.V1Job(
+        api_version="batch/v1",
+        kind="Job",
+        metadata=client.V1ObjectMeta(name=job_name),
+        spec=spec)
+
+    client.BatchV1Api().create_namespaced_job(
+        body=job,
+        namespace="default")
 
 
 app = Flask(import_name=__name__, static_url_path="/backend/static")
@@ -67,10 +66,21 @@ def health():
     return ""
 
 
+@app.route("/backend/pods/processor")
+def processor_pods():
+    v1 = client.CoreV1Api()
+    ret = v1.list_pod_for_all_namespaces(
+        watch=False, label_selector="app=file-drop-processor")
+    for i in ret.items:
+        print("%s\t%s" %
+              (i.status.phase, i.spec.containers[0].env[2].value), flush=True)
+    return json.dumps([{"phase": i.status.phase, "filename": i.spec.containers[0].env[2].value} for i in ret.items])
+
+
 @app.route("/backend/files", methods=["POST"])
 def upload():
     uploaded_files = request.files.getlist("files[]")
-    Scheduler.schedule(uploaded_files)
+    schedule(uploaded_files)
     return ""
 
 
