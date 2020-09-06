@@ -7,7 +7,7 @@ This chart deploys an `Ingress` so the cluster should have [`ingress-nginx`](htt
 ## Deploy
 
 ```bash
-.../file-drop.co.uk$ helm install fd chart --set api.token="YOUR_REBUILD_API_TOKEN"
+.../file-drop.co.uk/chart$ helm install fd . --set api.token="YOUR_REBUILD_API_TOKEN"
 ```
 
 ### Configuration
