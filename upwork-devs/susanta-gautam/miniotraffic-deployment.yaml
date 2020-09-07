@@ -31,7 +31,7 @@ spec:
               value: dummy
             # Upload to the target Source
             - name: UPLOAD_TO_TARGET
-              value: "True"
+              value: "true"
             # Source Minio Infromation
             - name: TARGET_MINIO_URL
               value: "http://minio-two.minio-two:9000"
