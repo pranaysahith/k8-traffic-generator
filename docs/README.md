@@ -14,16 +14,6 @@ Every POD can contain multiple scenario files. The traffic generator will pick u
 
 ![traffic](pngs/traffic-generator.png)
 
-## Multiple sites support
-
-To support customized actions on different websites, the traffic generators will implement expandable APIs for supported actions (open a page, follow a link, upload a file, download a file).
-
-Support of different web-site will be modularized into plugins. This will allow one to easily add/remove the support of necessary/unnecessary websites on a particular POD.  
-
-When executing a particular instruction the API will check if any of the plugins support the particular instruction. If yes, the handling of the instruction will be passed to the plugin. Otherwise, generic processing will be applied. 
-
-![multiple-sites](pngs/traffic-for-multiple-sites-API-v2.png)
-
 ## Logging
 All actions performed by the traffic generator are to be logged, traces, and metrics are to be collected.
 
