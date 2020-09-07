@@ -68,12 +68,8 @@ def health():
 
 @app.route("/backend/pods/processor")
 def processor_pods():
-    v1 = client.CoreV1Api()
-    ret = v1.list_pod_for_all_namespaces(
+    ret = client.CoreV1Api().list_pod_for_all_namespaces(
         watch=False, label_selector="app=file-drop-processor")
-    for i in ret.items:
-        print("%s\t%s" %
-              (i.status.phase, i.spec.containers[0].env[2].value), flush=True)
     return json.dumps([{"phase": i.status.phase, "filename": i.spec.containers[0].env[2].value} for i in ret.items])
 
 

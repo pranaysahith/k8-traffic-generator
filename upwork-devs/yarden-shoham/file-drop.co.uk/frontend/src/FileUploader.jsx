@@ -19,10 +19,7 @@ export default function FileUploader() {
   return (
     <div {...getRootProps()} className="dropzone">
       <input {...getInputProps()} />
-      <p>
-        Welcome to the File Drop traffic generator, add as many files as you
-        want!
-      </p>
+      <p>Add as many files as you want!</p>
     </div>
   );
 }

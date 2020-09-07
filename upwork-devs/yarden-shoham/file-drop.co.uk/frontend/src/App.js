@@ -1,10 +1,20 @@
 import React from "react";
-import logo from "./logo.svg";
+import Container from "react-bootstrap/Container";
+import Jumbotron from "react-bootstrap/Jumbotron";
 import FileUploader from "./FileUploader";
+import PodViewer from "./PodViewer";
 import "./App.css";
 
 function App() {
-  return <FileUploader />;
+  return (
+    <Container>
+      <Jumbotron>
+        <h1>Traffic Generator</h1>
+        <FileUploader />
+      </Jumbotron>
+      <PodViewer />
+    </Container>
+  );
 }
 
 export default App;
