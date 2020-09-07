@@ -1,9 +1,0 @@
-yahoo.html,https://www.yahoo.com
-example.html,https://www.example.com
-youtube.html,https://www.youtube.com
-golang.html,https://www.golang.org
-facebook.html,https://www.facebook.com
-google.html,http://google.com
-amazon.html,https://www.amazon.com
-upwork.html,http://www.upwork.com/games
-github.html,https://www.github.com
