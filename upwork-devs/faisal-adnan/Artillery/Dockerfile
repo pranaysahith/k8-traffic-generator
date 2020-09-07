@@ -2,6 +2,7 @@ FROM mhart/alpine-node:12
 
 RUN npm install -g artillery --allow-root --unsafe-perm=true
 RUN npm install -g artillery-plugin-publish-metrics
+RUN npm install -g artillery-plugin-expect
 
 WORKDIR /mnt/workspace
 

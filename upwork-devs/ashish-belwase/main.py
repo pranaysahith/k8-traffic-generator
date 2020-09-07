@@ -15,8 +15,7 @@ class Main:
     def run():
         Main.set_logging_level("INFO")
         asyncio.get_event_loop().run_until_complete(
-            TrafficGenerator.run(
-                url=os.getenv('URL'), action=os.getenv('ACTION'))
+            TrafficGenerator.run(url=os.getenv("URL"), action=os.getenv("ACTION"))
         )
 
 
