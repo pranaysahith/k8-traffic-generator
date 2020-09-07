@@ -11,6 +11,7 @@ services:
       BASE_URL: "http://nextcloud"
       NC_USER: admin
       NC_PASSWORD: nextcloud@123
+      HEADLESS: "1"
       TEST_ID: "1002"
       EXECUTABLE_PATH: "/usr/bin/google-chrome-stable"
     ports:
@@ -21,3 +22,5 @@ services:
     environment:
       NEXTCLOUD_ADMIN_USER: admin
       NEXTCLOUD_ADMIN_PASSWORD: nextcloud@123
+    ports:
+      - 9090:80
