@@ -2,7 +2,7 @@
 
 # The Workflow
 ## Traffic generation by a POD
-The PODs in k8 traffic generation deployments will generate traffic based on scenario files. Each instruction line in a scenario file defines the action to be taken (open a page, follow a link, upload a file, download a file), the URL, and if necessary the data (for instance, location of the file to be uploaded). 
+The PODs in k8 traffic generation deployments will generate traffic based on scenario files. Each instruction line in a scenario file defines the action to be taken (open a page, follow a link, upload a file, download a file), and, if necessary, the action corresponding data (for instance, location of the file to be uploaded). 
 
 There will be two types of scenarios: random and sequential. 
 
@@ -16,7 +16,7 @@ Every POD can contain multiple scenario files. The traffic generator will pick u
 
 ## Multiple sites support
 
-To support customized actions for different URLs on different websites, the traffic generators will implement expandable APIs for supported actions (open a page, follow a link, upload a file, download a file).
+To support customized actions on different websites, the traffic generators will implement expandable APIs for supported actions (open a page, follow a link, upload a file, download a file).
 
 Support of different web-site will be modularized into plugins. This will allow one to easily add/remove the support of necessary/unnecessary websites on a particular POD.  
 
