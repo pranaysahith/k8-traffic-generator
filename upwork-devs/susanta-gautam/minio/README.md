@@ -9,7 +9,7 @@ While replicating the minio demo in your test environment, please go through the
 
     `kubectl create ns minio-two`
     
-    `kubectl create ns minio-three`
+    `kubectl create ns minio-test`
 
 3. Deploy the minio deployment files.
 
