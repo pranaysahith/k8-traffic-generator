@@ -50,7 +50,8 @@ def schedule_job_in_kubernetes(file, file_identifier):
     job = client.V1Job(
         api_version="batch/v1",
         kind="Job",
-        metadata=client.V1ObjectMeta(name=job_name),
+        metadata=client.V1ObjectMeta(name=job_name, labels={
+                                     "app": "file-drop-processor"}),
         spec=spec)
 
     client.BatchV1Api().create_namespaced_job(
@@ -73,6 +74,13 @@ def processor_pods():
     return json.dumps([{"phase": i.status.phase, "filename": i.spec.containers[0].env[2].value} for i in ret.items])
 
 
+@app.route("/backend/jobs/processor", methods=["DELETE"])
+def delete_jobs():
+    ret = client.BatchV1Api().delete_collection_namespaced_job(
+        namespace="default", label_selector="app=file-drop-processor", propagation_policy="Foreground")
+    return ret.to_dict()
+
+
 @app.route("/backend/files", methods=["POST"])
 def upload():
     uploaded_files = request.files.getlist("files[]")
@@ -82,4 +90,4 @@ def upload():
 
 if __name__ == '__main__':
     config.load_incluster_config()
-    app.run(debug=True, host='0.0.0.0')
+    app.run(host='0.0.0.0')

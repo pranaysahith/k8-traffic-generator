@@ -31,7 +31,7 @@ class PodViewer extends Component {
     }
     const phaseClass = `text-${brand}`;
     return (
-      <tr>
+      <tr key={pod.filename}>
         <td>{pod.filename}</td>
         <td className={phaseClass}>{pod.phase}</td>
       </tr>
