@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: traffic-to-minio
-  namespace: your-namespace
+  namespace: minio-test
   labels:
     app: python-minio
 spec:
@@ -17,12 +17,12 @@ spec:
     spec:
       containers:
         - name: python-script
-          image: imagename
+          image: xuxant/k8s_traffic_minio
           env:
             - name: IN_LOOP
               value: "True"
             - name: SOURCE_MINIO_URL
-              value: "http://sourceminio:9000"
+              value: "http://minio-one.minio-one:9000"
             - name: SOURCE_MINIO_ACCESS_KEY
               value: minio1
             - name: SOURCE_MINIO_SECRET_KEY
@@ -31,10 +31,10 @@ spec:
               value: dummy
             # Upload to the target Source
             - name: UPLOAD_TO_TARGET
-              value: "True"
+              value: "true"
             # Source Minio Infromation
             - name: TARGET_MINIO_URL
-              value: "http://targetminio:9000"
+              value: "http://minio-two.minio-two:9000"
             - name: TARGET_MINIO_ACCESS_KEY
               value: minio2
             - name: TARGET_MINIO_SECRET_KEY
