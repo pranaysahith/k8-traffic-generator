@@ -1,0 +1,14 @@
+@startuml
+!include <c4/C4_Context.puml>  
+
+title Glass Wall Traffic Generator Context Overview
+
+Person(tester, "Glass Wall QA", "test the functionality and performance of the system")
+
+System(traffic_generator, "Traffic Generator", "glasswall traffic generator")
+System(website, "glasswall.com", "glass wall website")
+
+Rel_Down(tester, traffic_generator, "Upload Files")
+Rel_Down(traffic_generator, website, "Upload Files")
+
+@enduml
