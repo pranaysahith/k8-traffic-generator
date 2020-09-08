@@ -1,7 +1,7 @@
 @startuml
 !include <c4/C4_Component.puml>  
 
-title Glass Wall Traffic Generator GUI Container Overview
+title Glass Wall Traffic Generator GUI Component Overview
 
 Person(tester, "Glass Wall QA", "test the functionality and performance of the system")
 
