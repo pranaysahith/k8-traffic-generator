@@ -1,0 +1,24 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: input-queue-nodeport
+spec:
+  selector:
+    app: input-queue
+  ports:
+    - name: http
+      port: 9000
+  type: NodePort
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: output-queue-nodeport
+spec:
+  selector:
+    app: output-queue
+  ports:
+    - name: http
+      port: 9000
+  type: NodePort
