@@ -5,8 +5,7 @@ import time
 from pprint import pprint
 from opencensus_prometheus import OpenCensusPrometheus
 from traffic_generator import TrafficGenerator
-# import nest_asyncio
-# nest_asyncio.apply()
+
 
 class Main():
     log = logging.getLogger("GW:traffic_g")
@@ -19,8 +18,8 @@ class Main():
     def main():
         Main.set_logging_level("INFO")
         url = os.getenv("BASE_URL", "http://localhost:9090/")
-        username = os.getenv("NC_USER", "admin")
-        password = os.getenv("NC_PASSWORD", "nextcloud@123")
+        username = os.getenv("NC_USER")
+        password = os.getenv("NC_PASSWORD")
         headless = bool(os.getenv("HEADLESS", 1))
         test_id = os.getenv("TEST_ID", "1001")
         ocp = OpenCensusPrometheus(test_id)
@@ -36,4 +35,4 @@ class Main():
 
 
 if __name__ == "__main__":
-        Main.main()
+    Main.main()
