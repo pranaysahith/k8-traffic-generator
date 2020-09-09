@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: python-script
-          image: xuxant/k8s_traffic_minio
+          image: ggrig/k8-traffic:python
           env:
             - name: IN_LOOP
               value: "True"
