@@ -1,0 +1,10 @@
+yahoo.png,https://www.yahoo.com,browser
+example.html,https://www.example.com,request
+youtube.png,https://www.youtube.com,browser
+golang.html,https://www.golang.org,request
+facebook.png,https://www.facebook.com,browser
+google.html,http://google.com,request
+amazon.png,https://www.amazon.com,browser
+upwork.html,http://www.upwork.com/games,request
+github.png,https://www.github.com,browser
+yahoo.html,https://www.yahoo.com/games,request

@@ -1,0 +1,4 @@
+title = "data"
+
+[duration]
+app_timeout = 100000 #Millisecond
