@@ -39,6 +39,8 @@ digraph {
     n2 -> n3 [label="download/upload files"]
     n2 -> n4 [label="send metrics"]
     n2 -> n5 [label="send logs"]
+
+   { rank=same  n2 n4 n5 }
     
 }
 ```
