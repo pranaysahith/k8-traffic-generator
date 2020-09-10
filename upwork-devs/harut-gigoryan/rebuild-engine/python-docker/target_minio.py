@@ -1,3 +1,4 @@
+import pdb
 import os
 import logging
 import boto3
@@ -7,7 +8,7 @@ from botocore.client import Config
 from botocore.exceptions import ClientError
 from threading import Thread
 
-logger = logging.getLogger('GW:minio')
+logger = logging.getLogger('minio')
 file_path = '/files/'
 
 
@@ -19,9 +20,9 @@ class Main():
 
     @staticmethod
     def download_from_minio(UPLOAD_TO_TARGET):
-        URL = os.getenv('SOURCE_MINIO_URL', 'http://source-minio:9000')
-        ACCESS_KEY = os.getenv('SOURCE_MINIO_ACCESS_KEY', 'susanta')
-        SECRET_KEY = os.getenv('SOURCE_MINIO_SECRET_KEY', 'susanta@123')
+        URL = os.getenv('SOURCE_MINIO_URL', 'http://192.168.99.115:32580')
+        ACCESS_KEY = os.getenv('SOURCE_MINIO_ACCESS_KEY', 'minio1')
+        SECRET_KEY = os.getenv('SOURCE_MINIO_SECRET_KEY', 'minio1@123')
         BUCKET = os.getenv('SOURCE_MINIO_BUCKET', 'dummy')
 
         try:
@@ -45,14 +46,14 @@ class Main():
         except ClientError as e:
             logger.error(
                 "Cannot Connect to the Minio {}. Please Verify your credentials.".format(URL))
-        except e:
+        except Exception as e:
             logger.error(e)
 
     @staticmethod
     def upload_to_minio(file_path, filename):
-        URL = os.getenv('TARGET_MINIO_URL', 'http://target-minio:9000')
-        ACCESS_KEY = os.getenv('TARGET_MINIO_ACCESS_KEY', 'susanta')
-        SECRET_KEY = os.getenv('TARGET_MINIO_SECRET_KEY', 'susanta@123')
+        URL = os.getenv('TARGET_MINIO_URL', 'http://192.168.99.115:31634')
+        ACCESS_KEY = os.getenv('TARGET_MINIO_ACCESS_KEY', 'minio2')
+        SECRET_KEY = os.getenv('TARGET_MINIO_SECRET_KEY', 'minio2@123')
         BUCKET = os.getenv('TARGET_MINIO_BUCKET', 'dummy')
 
         try:
@@ -70,18 +71,19 @@ class Main():
         except ClientError as e:
             logger.error(
                 "Cannot connect to the minio {}. Please vefify the Credentials.".format(URL))
-        except e:
-            logger.error(e)
+        except Exception as e:
+            logger.info(e)
 
     @staticmethod
     def application():
-        UPLOAD_TO_TARGET = os.getenv('UPLOAD_TO_TARGET', 'false')
-        IN_LOOP = os.getenv('IN_LOOP', 'FALSE')
+        UPLOAD_TO_TARGET = os.getenv('UPLOAD_TO_TARGET', 'TRUE')
+        IN_LOOP = os.getenv('IN_LOOP', 'TRUE')
         endpoint = '/minio/health/ready'
+        #endpoint = '/minio/'
         logger.info('Checking if the Target Minio {} is avaliable.'.format(
-            os.getenv('TARGET_MINIO_URL')))
+            os.getenv('TARGET_MINIO_URL', 'http://192.168.99.115:31634')))
         if UPLOAD_TO_TARGET.upper() == 'TRUE':
-            URL = os.getenv('TARGET_MINIO_URL') + endpoint
+            URL = os.getenv('TARGET_MINIO_URL', 'http://192.168.99.115:31634') + endpoint
 
             for i in range(0, 4):
                 try:
@@ -100,9 +102,9 @@ class Main():
                         'Could not connect to Target Minio {}.'.format(URL))
 
         for j in range(0, 4):
-            URL = os.getenv('SOURCE_MINIO_URL') + endpoint
+            URL = os.getenv('SOURCE_MINIO_URL','http://192.168.99.115:32580') + endpoint
             logger.info('Checking if the Source Minio {} is avaliable.'.format(
-                os.getenv('SOURCE_MINIO_URL')))
+                os.getenv('SOURCE_MINIO_URL','http://192.168.99.115:32580')))
             try:
                 response2 = requests.get(URL, timeout=2)
                 if response2.status_code == 200:
@@ -110,6 +112,7 @@ class Main():
                         response2.status_code, URL))
                     if IN_LOOP.upper() == 'TRUE':
                         logger.info('Starting Application in Loop Mode.')
+#                        pdb.set_trace()
                         while True:
                             Main.download_from_minio(UPLOAD_TO_TARGET)
                     else:
@@ -124,9 +127,12 @@ class Main():
 
     @staticmethod
     def main():
+#        pdb.set_trace()
         LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
         Main.log_level(LOG_LEVEL)
         time.sleep(5)
+        if os.name == 'nt':
+            file_path = 'C:/files/'
         Main.application()
 
 
