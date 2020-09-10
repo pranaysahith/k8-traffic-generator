@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: traffic_generator
+  labels:
+    env: test
+    jobgroup: traffic_generator
+spec:
+  ttlSecondsAfterFinished: 60
+  template:
+    metadata:
+      name: traffic_generator
+      labels:
+        jobgroup: traffic_generator
+    spec:
+      containers:
+      - name: traffic_generator
+        image: pranaysahith/traffic_generator_gov_uk:0.0.1
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: GOV_UK_URL
+            value: "https://www.gov.uk.glasswall-icap.com/"
+          - name: FILE_DROP_URL
+            value: "https://glasswall-file-drop.azurewebsites.net"
+          - name: HEADLESS
+            value: "1"
+          - name: NUM_FILES
+            value: "10"
+        workingDir: /app
+      restartPolicy: Never  
+---
