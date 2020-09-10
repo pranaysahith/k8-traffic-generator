@@ -16,7 +16,7 @@ class TestGovUK(TestCase):
     def setUpClass(cls):
         gov_uk_url = "https://www.gov.uk.glasswall-icap.com"
         tg = TrafficGenerator(gov_uk_url)
-        # asyncio.get_event_loop().run_until_complete(tg.run(num_files=10))
+        asyncio.get_event_loop().run_until_complete(tg.run(num_files=10))
         file_drop_url = "https://glasswall-file-drop.azurewebsites.net"
         cls.file_drop = FileDrop(file_drop_url)
 

@@ -17,7 +17,7 @@ class TrafficGenerator():
 
     async def run(self, num_files):
         browser_path = os.getenv("EXECUTABLE_PATH", None)
-        self.browser = await launch(headless=False, executablePath=browser_path,
+        self.browser = await launch(headless=True, executablePath=browser_path,
                             args=[
             '--no-sandbox',
             '--disable-dev-shm-usage',
