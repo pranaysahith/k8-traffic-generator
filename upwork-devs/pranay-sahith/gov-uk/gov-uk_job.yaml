@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: traffic_generator
-        image: pranaysahith/traffic_generator_gov_uk:0.0.1
+        image: pranaysahith/traffic_generator_gov_uk:0.0.2
         imagePullPolicy: IfNotPresent
         env:
           - name: GOV_UK_URL
