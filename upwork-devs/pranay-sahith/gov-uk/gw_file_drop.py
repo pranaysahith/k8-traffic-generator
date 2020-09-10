@@ -19,6 +19,7 @@ class FileDrop():
             '--ignore-certificate-errors',
             '--enable-features=NetworkService'])
         self.page = (await self.browser.pages())[0]
+        self.page.setDefaultNavigationTimeout(300000)
 
     async def is_clean_file(self, local_file_name):
         await self.page.goto(self.url)
