@@ -7,8 +7,9 @@ const URL = process.env.URL
 
 const generateTraffic = async(URL) => {
     const browser = await puppeteer.launch({
-        headless: false,
-        ignoreHTTPSErrors: true
+        headless: true,
+        ignoreHTTPSErrors: true,
+        args: ["--no-sandbox"]
     });
     const page = await browser.newPage();
     logger.log('info', "Loading URL: " +URL);
