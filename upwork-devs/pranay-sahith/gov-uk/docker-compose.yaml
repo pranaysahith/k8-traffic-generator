@@ -6,5 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      TARGET_URL: "https://www.gov.uk.glasswall-icap.com/"
+      GOV_UK_URL: "https://www.gov.uk.glasswall-icap.com/"
+      FILE_DROP_URL: "https://glasswall-file-drop.azurewebsites.net"
       HEADLESS: "1"
+      NUM_FILES: "10"

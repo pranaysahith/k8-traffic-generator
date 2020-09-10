@@ -14,16 +14,17 @@ class TestGovUK(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        gov_uk_url = "https://www.gov.uk.glasswall-icap.com"
+        gov_uk_url = os.getenv("GOV_UK_URL", "https://www.gov.uk.glasswall-icap.com")
+        file_drop_url = os.getenv("FILE_DROP_URL", "https://glasswall-file-drop.azurewebsites.net")
+        num_files = int(os.getenv("NUM_FILES", 10))
         tg = TrafficGenerator(gov_uk_url)
-        asyncio.get_event_loop().run_until_complete(tg.run(num_files=10))
-        file_drop_url = "https://glasswall-file-drop.azurewebsites.net"
+        asyncio.get_event_loop().run_until_complete(tg.run(num_files=num_files))
         cls.file_drop = FileDrop(file_drop_url)
 
     def test_is_clean(self):
         local_file_names = os.listdir(".")
         pdf_files = [f for f in local_file_names if f.rsplit(".")[-1] == "pdf" ]
-        headless = True
+        headless = bool(os.getenv("HEADLESS", 1))
         asyncio.get_event_loop().run_until_complete(self.file_drop.start(headless))
         for each_file in pdf_files:
             print(f"validating file: {each_file}")
