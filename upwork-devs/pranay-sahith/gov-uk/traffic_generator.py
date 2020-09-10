@@ -48,7 +48,7 @@ class TrafficGenerator():
 
         saved_files = 0
         for u in urls_list:
-            # try:
+            try:
                 if saved_files >= num_files:
                     break
                 log.info(f"opening {u}")
@@ -64,14 +64,16 @@ class TrafficGenerator():
                     '(dl_url) => dl_url.href',
                     dl_url
                     )
+                    if "glasswall" not in file_url:
+                        continue
                     self.save_file(file_url)
                     saved_files += 1
                     if saved_files >= num_files:
                         break
 
                 time.sleep(3)
-            # except Exception as e:
-            #     log.error(e)
+            except Exception as e:
+                log.error(e)
         await self.browser.close()
 
     def save_file(self, file_url):

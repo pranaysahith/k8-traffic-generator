@@ -45,4 +45,6 @@ RUN pip install -r requirements.txt &&\
     xdg-utils
 
 COPY . /app
-CMD [ "python", "main.py" ]
+RUN chmod +x /app/entrypoint.sh
+# CMD [ "python", "-m", "unittest" ]
+ENTRYPOINT [ "/app/entrypoint.sh" ]
