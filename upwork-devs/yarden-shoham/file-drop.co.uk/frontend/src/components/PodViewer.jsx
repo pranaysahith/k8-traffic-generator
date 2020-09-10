@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import Table from "react-bootstrap/Table";
-import axios from "axios";
 
 class PodViewer extends Component {
   state = { pods: [] };
@@ -40,7 +39,7 @@ class PodViewer extends Component {
 
   getPods = async () => {
     try {
-      const { data } = await axios.get("/backend/pods/processor");
+      const data = await (await fetch("/backend/pods/processor")).json();
       this.setState({ pods: data });
     } catch (error) {
       console.error(error);
