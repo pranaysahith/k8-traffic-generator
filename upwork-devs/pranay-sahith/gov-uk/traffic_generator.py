@@ -5,6 +5,7 @@ import asyncio
 import logging
 
 log = logging.getLogger("TG:gov_uk")
+log.setLevel("INFO")
 
 
 class TrafficGenerator():
@@ -21,7 +22,7 @@ class TrafficGenerator():
             '--disable-dev-shm-usage',
             '--ignore-certificate-errors',
             '--enable-features=NetworkService'])
-        self.page = await self.browser.newPage()
+        self.page = (await self.browser.pages())[0]
         await self.download_files("pdf")
 
     async def download_files(self, search_by='pdf'):
@@ -30,7 +31,7 @@ class TrafficGenerator():
         await self.page.type("input", search_by)
         await self.page.keyboard.press("Enter")
 
-        
+        await self.page.waitForXPath("//li[@class='gem-c-document-list__item  ']/a")
         href_list = await self.page.xpath("//li[@class='gem-c-document-list__item  ']/a")
         log.info(f"found {len(href_list)} number of search results")
         urls_list = []
@@ -41,7 +42,7 @@ class TrafficGenerator():
                 )
             urls_list.append(url)
 
-        for u in urls_list[0:5]:
+        for u in urls_list:
             try:
                 log.info(f"opening {u}")
                 await self.page.goto(u, waitUntil="networkidle0")
