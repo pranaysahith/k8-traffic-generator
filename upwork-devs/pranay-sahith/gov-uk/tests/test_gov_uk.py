@@ -1,10 +1,11 @@
 from unittest import TestCase
 import asyncio
-from traffic_generator import TrafficGenerator
-from gw_file_drop import FileDrop
 import logging
 import os
 import time
+from tika import parser
+from traffic_generator import TrafficGenerator
+from gw_file_drop import FileDrop
 
 log = logging.getLogger("TG:gov_uk")
 log.setLevel("INFO")
@@ -32,6 +33,14 @@ class TestGovUK(TestCase):
             print(each_file + ":" + result)
             assert result == "File is clean!"
             time.sleep(3)
+
+    def test_tag(self):
+        local_file_names = os.listdir(".")
+        pdf_files = [f for f in local_file_names if f.rsplit(".")[-1] == "pdf" ]
+        for each_file in pdf_files:
+            raw = parser.from_file(each_file)
+            print(f"parsed file: {each_file}")
+            assert "Glasswall Approved" in raw["content"]
 
     @classmethod
     def tearDownClass(cls):
