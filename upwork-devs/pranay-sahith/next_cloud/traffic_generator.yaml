@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: traffic-generator
+    component: core
+  name: traffic-generator
+  namespace: nextcloud
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: /metrics
+    prometheus.io/port: "8000"
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: traffic-generator
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: traffic-generator
+        component: core
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8000"
+    spec:
+      containers:
+        - env:
+            - name: TEST_ID
+              value: "1002"
+            - name: BASE_URL
+              value: "http://nextcloud"
+            - name: NC_USER
+              value: admin
+            - name: NC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud
+                  key: nextcloud-password
+            - name: EXECUTABLE_PATH
+              value: "/usr/bin/google-chrome-stable"
+          image: pranaysahith/metrics_generator_nextcloud:0.0.1
+          imagePullPolicy: Always
+          name: traffic-generator
+          resources:
+            limits:
+              cpu: 500m
+              memory: 500Mi
+            requests:
+              cpu: 500m
+              memory: 500Mi
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traffic-generator-service
+  namespace: nextcloud
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+      protocol: TCP
+      name: http
+  selector:
+    app: traffic-generator
+---

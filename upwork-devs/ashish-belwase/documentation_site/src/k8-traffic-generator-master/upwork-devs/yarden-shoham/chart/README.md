@@ -1,3 +1,6 @@
+---
+slug: "/yarden-shoham/chart"
+---
 # Helm Chart
 
 ## Deploy

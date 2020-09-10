@@ -1,0 +1,22 @@
+frontend:
+  image:
+    registry: docker.io
+    repository: yardenshoham/file-drop-frontend
+    tag: latest
+  replicaCount: 1
+
+backend:
+  image:
+    registry: docker.io
+    repository: yardenshoham/file-drop-backend
+    tag: latest
+
+processor:
+  image:
+    registry: docker.io
+    repository: yardenshoham/file-drop-processor
+    tag: latest
+
+api:
+  url: https://gzlhbtpvk2.execute-api.eu-west-1.amazonaws.com/Prod/api/rebuild/file
+  token: null
