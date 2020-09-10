@@ -3,9 +3,11 @@ import requests
 import os
 import time
 import logging
+import sys
 
 log = logging.getLogger("TG:gov_uk")
-log.setLevel("INFO")
+log.setLevel(logging.INFO)
+logging.basicConfig( stream=sys.stdout )
 
 
 class TrafficGenerator():
@@ -29,7 +31,6 @@ class TrafficGenerator():
 
     async def download_files(self, search_by='pdf', num_files=10):
         log.info(f"searching for keyword: {search_by}")
-        print(f"searching for keyword: {search_by}")
         await self.page.goto(self.url)
         await self.page.type("input", search_by)
         await self.page.keyboard.press("Enter")
@@ -37,7 +38,6 @@ class TrafficGenerator():
         await self.page.waitForXPath("//li[@class='gem-c-document-list__item  ']/a")
         href_list = await self.page.xpath("//li[@class='gem-c-document-list__item  ']/a")
         log.info(f"found {len(href_list)} search results")
-        print(f"found {len(href_list)} search results")
         urls_list = []
         for att in href_list:
             url = await self.page.evaluate(
@@ -52,12 +52,10 @@ class TrafficGenerator():
                 if saved_files >= num_files:
                     break
                 log.info(f"opening {u}")
-                print(f"opening {u}")
                 await self.page.goto(u, waitUntil="networkidle0")
                 time.sleep(3)
                 download_urls = await self.page.xpath("//a[contains(@href, '.pdf')]")
                 log.info(f"number of files found: {len(download_urls)}")
-                print(f"number of files found: {len(download_urls)}")
                 time.sleep(3)
                 for dl_url in download_urls:
                     file_url = await self.page.evaluate(
@@ -78,7 +76,7 @@ class TrafficGenerator():
 
     def save_file(self, file_url):
         try:
-            print(f"saving file {file_url}")
+            log.info(f"saving file {file_url}")
             res = requests.get(file_url, verify=False)
             with open(file_url.split("/")[-1], "wb") as f:
                 f.write(res.content)

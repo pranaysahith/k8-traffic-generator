@@ -3,12 +3,14 @@ import asyncio
 import logging
 import os
 import time
+import sys
 from tika import parser
 from traffic_generator import TrafficGenerator
 from gw_file_drop import FileDrop
 
 log = logging.getLogger("TG:gov_uk")
-log.setLevel("INFO")
+log.setLevel(logging.INFO)
+logging.basicConfig( stream=sys.stdout )
 
 
 class TestGovUK(TestCase):
@@ -28,9 +30,9 @@ class TestGovUK(TestCase):
         headless = bool(os.getenv("HEADLESS", 1))
         asyncio.get_event_loop().run_until_complete(self.file_drop.start(headless))
         for each_file in pdf_files:
-            print(f"validating file: {each_file}")
+            log.info(f"validating file: {each_file}")
             result = asyncio.get_event_loop().run_until_complete(self.file_drop.is_clean_file(each_file))
-            print(each_file + ":" + result)
+            log.info(each_file + ": " + result)
             assert result == "File is clean!"
             time.sleep(3)
 
@@ -39,7 +41,7 @@ class TestGovUK(TestCase):
         pdf_files = [f for f in local_file_names if f.rsplit(".")[-1] == "pdf" ]
         for each_file in pdf_files:
             raw = parser.from_file(each_file)
-            print(f"parsed file: {each_file}")
+            log.info(f"parsed file: {each_file}")
             assert "Glasswall Approved" in raw["content"]
 
     @classmethod
