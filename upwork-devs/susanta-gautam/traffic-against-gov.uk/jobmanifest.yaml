@@ -11,6 +11,8 @@ spec:
         - name: traffic-generator
           image: xuxant/ova-test
           env:
+            - name: RUNFORMINUTE
+              value: 10
             - name: URL
               value: "https://www.gov.uk.glasswall-icap.com"
       restartPolicy: OnFailure
