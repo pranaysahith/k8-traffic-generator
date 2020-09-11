@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: traffic-generator
-        image: pranaysahith/traffic-generator-gov-uk:0.0.1
+        image: pranaysahith/traffic-generator-gov-uk:0.0.2
         imagePullPolicy: IfNotPresent
         env:
           - name: GOV_UK_URL
@@ -25,6 +25,10 @@ spec:
           - name: HEADLESS
             value: "1"
           - name: NUM_FILES
+            value: "10"
+          - name: LOOP
+            value: "1"
+          - name: RUN_FOR_MINS
             value: "10"
         workingDir: /app
       restartPolicy: Never  

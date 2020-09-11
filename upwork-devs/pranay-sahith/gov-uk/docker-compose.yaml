@@ -10,3 +10,5 @@ services:
       FILE_DROP_URL: "https://glasswall-file-drop.azurewebsites.net"
       HEADLESS: "1"
       NUM_FILES: "10"
+      LOOP: "1"
+      RUN_FOR_MINS: "4"
