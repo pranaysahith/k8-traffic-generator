@@ -7,6 +7,7 @@ from datetime import datetime;
 import boto3
 import requests
 import time
+import uuid
 from botocore.client import Config
 from botocore.exceptions import ClientError
 from threading import Thread
@@ -23,7 +24,7 @@ class ElkJsonFormatter(jsonlogger.JsonFormatter):
         log_record['logger'] = record.name
 
 logging.config.fileConfig('logging.conf')
-logger = logging.getLogger("MainLogger")
+logger = logging.getLogger(uuid.uuid1().urn)
 
 logging.info('Application running!')
 
