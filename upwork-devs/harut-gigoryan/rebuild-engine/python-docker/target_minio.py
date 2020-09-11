@@ -1,6 +1,9 @@
-import pdb
+#import pdb
 import os
 import logging
+import logging.config
+from pythonjsonlogger import jsonlogger
+from datetime import datetime;
 import boto3
 import requests
 import time
@@ -10,7 +13,20 @@ from threading import Thread
 from minio import Minio
 from minio.error import ResponseError
 
-logger = logging.getLogger('minio')
+#logger = logging.getLogger('minio')
+
+class ElkJsonFormatter(jsonlogger.JsonFormatter):
+    def add_fields(self, log_record, record, message_dict):
+        super(ElkJsonFormatter, self).add_fields(log_record, record, message_dict)
+        log_record['@timestamp'] = datetime.now().isoformat()
+        log_record['level'] = record.levelname
+        log_record['logger'] = record.name
+
+logging.config.fileConfig('logging.conf')
+logger = logging.getLogger("MainLogger")
+
+logging.info('Application running!')
+
 file_path = '/files/'
 
 SRC_URL = os.getenv('SOURCE_MINIO_URL', 'http://192.168.99.115:32580')

@@ -18,4 +18,6 @@ RUN pip install -r requirement.txt --user
 
 COPY target_minio.py .
 
+COPY logging.conf .
+
 CMD ["python", "target_minio.py"]
