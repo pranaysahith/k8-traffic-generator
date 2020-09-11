@@ -1,21 +1,21 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: traffic_generator
+  name: traffic-generator
   labels:
     env: test
-    jobgroup: traffic_generator
+    jobgroup: traffic-generator
 spec:
   ttlSecondsAfterFinished: 60
   template:
     metadata:
-      name: traffic_generator
+      name: traffic-generator
       labels:
-        jobgroup: traffic_generator
+        jobgroup: traffic-generator
     spec:
       containers:
-      - name: traffic_generator
-        image: pranaysahith/traffic_generator_gov_uk:0.0.2
+      - name: traffic-generator
+        image: pranaysahith/traffic-generator-gov-uk:0.0.1
         imagePullPolicy: IfNotPresent
         env:
           - name: GOV_UK_URL
