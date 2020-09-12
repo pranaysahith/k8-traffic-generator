@@ -1,4 +1,3 @@
-#FROM docker.elastic.co/beats/filebeat:7.9.1
 FROM python:3.7-stretch
 
 WORKDIR /application

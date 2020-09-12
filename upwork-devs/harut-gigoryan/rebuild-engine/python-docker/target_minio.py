@@ -30,12 +30,12 @@ logger = logging.getLogger(uuid.uuid1().urn)
 
 file_path = '/files/'
 
-SRC_URL = os.getenv('SOURCE_MINIO_URL', 'http://192.168.99.115:32580')
+SRC_URL = os.getenv('SOURCE_MINIO_URL', 'http://192.168.99.117:31501')
 SRC_ACCESS_KEY = os.getenv('SOURCE_MINIO_ACCESS_KEY', 'minio1')
 SRC_SECRET_KEY = os.getenv('SOURCE_MINIO_SECRET_KEY', 'minio1@123')
 SRC_BUCKET = os.getenv('SOURCE_MINIO_BUCKET', 'dummy')
 
-TGT_URL = os.getenv('TARGET_MINIO_URL', 'http://192.168.99.115:31634')
+TGT_URL = os.getenv('TARGET_MINIO_URL', 'http://192.168.99.117:30876')
 TGT_ACCESS_KEY = os.getenv('TARGET_MINIO_ACCESS_KEY', 'minio2')
 TGT_SECRET_KEY = os.getenv('TARGET_MINIO_SECRET_KEY', 'minio2@123')
 TGT_BUCKET = os.getenv('TARGET_MINIO_BUCKET', 'dummy')
