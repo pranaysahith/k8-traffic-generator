@@ -62,7 +62,7 @@ class TrafficGenerator():
                     '(dl_url) => dl_url.href',
                     dl_url
                     )
-                    if "glasswall" not in file_url:
+                    if "gov.uk" not in file_url:
                         continue
                     self.save_file(file_url)
                     saved_files += 1
