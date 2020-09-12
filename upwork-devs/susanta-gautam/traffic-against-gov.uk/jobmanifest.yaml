@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: traffic-generator
+  namespace: test
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec: 
+      containers:
+        - name: traffic-generator
+          image: xuxant/ova-test
+          env:
+            - name: RUNFORMINUTE
+              value: 10
+            - name: URL
+              value: "https://www.gov.uk.glasswall-icap.com"
+      restartPolicy: OnFailure
+  backoffLimit: 3
