@@ -42,7 +42,7 @@ TGT_BUCKET = os.getenv('TARGET_MINIO_BUCKET', 'dummy')
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 UPLOAD_TO_TARGET = os.getenv('UPLOAD_TO_TARGET', 'TRUE')
-#IN_LOOP = os.getenv('IN_LOOP', 'TRUE')
+IN_LOOP = os.getenv('IN_LOOP', 'TRUE')
 
 class Main():
 
@@ -130,15 +130,13 @@ class Main():
                     logger.info('Recieved status code {} from Minio {}.'.format(
                         response2.status_code, URL))
                     Main.download_from_minio(UPLOAD_TO_TARGET)
-                    
-#                    if IN_LOOP.upper() == 'TRUE':
-#                        logger.info('Starting Application in Loop Mode.')
-#                        pdb.set_trace()
-#                        while True:
-#                            Main.download_from_minio(UPLOAD_TO_TARGET)
-#                    else:
-#                        Main.download_from_minio(UPLOAD_TO_TARGET)
-                       
+#                    
+                    if IN_LOOP.upper() == 'TRUE':
+##                        pdb.set_trace()
+                        logger.info('Starting Application in Loop Mode.')
+                        while True:
+                            Main.download_from_minio(UPLOAD_TO_TARGET)
+#                       
                 else:
                     if j == 4:
                         logger.error(
@@ -154,6 +152,8 @@ class Main():
         time.sleep(5)
         if os.name == 'nt':
             file_path = 'C:/files/'
+        else:
+            os.system('service filebeat start')
         Main.application()
 
 
