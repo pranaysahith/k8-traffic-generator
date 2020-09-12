@@ -7,6 +7,10 @@
 5. To run the tests only once, set the environment variable `LOOP` to `0`
 6. The environment variables are configurable in docker-compose.yaml and gov-uk_job.yaml files.
 
+## Install prerequisites (Windows)
+1. Download and install Docker for Desktop from https://hub.docker.com/editions/community/docker-ce-desktop-windows/
+2. Download and install kubectl from https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-windows
+
 ## To test in local, run
 
 `docker-compose up --build`
