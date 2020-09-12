@@ -153,12 +153,13 @@ output.elasticsearch:
   hosts: ["elasticsearch-es-http:9200"]
 
   # Protocol - either `http` (default) or `https`.
-  #protocol: "https"
+  protocol: "https"
+  ssl.verification_mode: "none"
 
   # Authentication credentials - either API key or username/password.
   #api_key: "id:api_key"
-  #username: "elastic"
-  #password: "changeme"
+  username: "elastic"
+  password: "4hH6V22LQB198O6Ehwvj99BZ"
 
 # ------------------------------ Logstash Output -------------------------------
 #output.logstash:
@@ -196,6 +197,14 @@ processors:
 # To enable all selectors use ["*"]. Examples of other selectors are "beat",
 # "publish", "service".
 #logging.selectors: ["*"]
+
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644
 
 # ============================= X-Pack Monitoring ==============================
 # Filebeat can export internal metrics to a central Elasticsearch monitoring
