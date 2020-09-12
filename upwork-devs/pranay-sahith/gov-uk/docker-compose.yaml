@@ -1,0 +1,14 @@
+version: '3.6'
+services:
+  traffic-generator:
+    image: traffic-generator
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      GOV_UK_URL: "https://www.gov.uk.glasswall-icap.com/"
+      FILE_DROP_URL: "https://glasswall-file-drop.azurewebsites.net"
+      HEADLESS: "1"
+      NUM_FILES: "10"
+      LOOP: "1"
+      RUN_FOR_MINS: "4"
