@@ -90,7 +90,7 @@ The passcode for user 'elastic' may be obtained with the following command
 ```
 kubectl get secret elasticsearch-es-elastic-user -o go-template="{{.data.elastic | base64decode}}"
 ```
-In some cases, it may be helpful to switch password protection for Elasticsearch off. For instance, a POD with pre-configured filebeat setup may need such access to send logs to the ELK. This may be achieved by adding the following to the 
+In some cases, it may be helpful to switch password protection for Elasticsearch off. For instance, a POD with a pre-configured filebeat setup may need such access to send logs to the ELK. This may be achieved by adding the following to the 
 ```
     config:
       xpack.security.authc:
@@ -99,12 +99,36 @@ In some cases, it may be helpful to switch password protection for Elasticsearch
           roles: superuser
           authz_exception: false
 ```
+### ELK with Filebeat
+For ELK deployment with a Filebeat POD see step by step instructions at:
+
+https://github.com/filetrust/k8-traffic-generator/blob/master/upwork-devs/faisal-adnan/elk/HOWTO-ELK.md
+
+### ELK with Pakcetbeat
+For ELK deployment with a Packetbeat POD see step by step instructions at:
+
+https://github.com/filetrust/k8-traffic-generator/tree/master/upwork-devs/harut-gigoryan/packetbeat-poc  
 
 ## Minio
-The following step by step quide for deploying Minio has been tested on Windows 10:
+The step by step guide for deploying Minio 
 
 https://github.com/filetrust/k8-traffic-generator/tree/master/upwork-devs/susanta-gautam/minio-traffic-generator/minio
 
-## Artillery
+utilizing Nodeport, has been tested on Windows 10.
 
 ## JMeter
+To deploy a JMeter POD firstly build a docker image from: 
+https://github.com/filetrust/k8-traffic-generator/tree/master/upwork-devs/faisal-adnan/JMeter
+utilizing minikube docker environment in Windows PowerShell (as explained above): 
+```
+PS C:\WINDOWS\system32> & minikube -p minikube docker-env | Invoke-Expression
+PS C:\WINDOWS\system32> cd C:\Projects\Glasswall\k8-traffic-generator\upwork-devs\faisal-adnan\JMeter
+PS C:\Projects\Glasswall\k8-traffic-generator\upwork-devs\faisal-adnan\JMeter> docker build -t test/jmeter .
+```
+Then deploy the POD:
+```
+PS kubectl apply -f test/jmeter
+```
+
+## Artillery
+
