@@ -1,4 +1,10 @@
 # Windows 10 setups
+## Prerequisites
+Clone https://github.com/filetrust/k8-traffic-generator to your C:\ drive root directory
+```
+git clone https://github.com/filetrust/k8-traffic-generator.git
+```
+All the CLI commands should be run in an elevated command prompt or PowerShell
 ## Minikube installation
 Minikube installation instruction can be found at https://kubernetes.io/docs/tasks/tools/install-minikube/
 We use VirtualBox Hypervisor on all the systems including Windows 10
@@ -139,8 +145,10 @@ https://github.com/filetrust/k8-traffic-generator/tree/master/upwork-devs/susant
 
 ## JMeter
 
-Deploy ELK with filebeat POD and a single POD Minio as described above
+Deploy ELK with filebeat POD and a single POD Minio as described above.
+In Minio create a bucket called 'jmeter'
 
+Get the JMeter image from docker hub
 ```
 C:> & minikube -p minikube docker-env | Invoke-Expression
 C:> docker pull peltops/gws_jmeter:v1
@@ -173,4 +181,40 @@ C:\k8-traffic-generator\upwork-devs\faisal-adnan\JMeter> kubectl create -f ./jme
 ```
 
 ## Artillery
+Start minikube with the following:
+```
+C:\> minikube start --feature-gates=TTLAfterFinished=true --driver=virtualbox
+```
+Get Artillery image from the docker hub
+```
+C:> & minikube -p minikube docker-env | Invoke-Expression
+C:> docker pull peltops/gws_artillery:v3
+```
+Clean older Artillery jobs
+```
+C:\> kubectl delete --ignore-not-found jobs -l jobgroup=artillery
+C:\> kubectl delete --ignore-not-found secret artilleryconf
+```
+Got to the Artillery directory
+```
+C:\> cd C:\k8-traffic-generator\upwork-devs\faisal-adnan\Artillery
+```
+Create secret
+```
+PS C:\k8-traffic-generator\upwork-devs\faisal-adnan\Artillery> kubectl create secret generic artilleryconf --from-file=artillery-conf.yml
+secret/artilleryconf created
+```
 
+Make a copy of the template manifest file
+```
+C:\k8-traffic-generator\upwork-devs\faisal-adnan\Artillery> mkdir jobs
+.....
+C:\k8-traffic-generator\upwork-devs\faisal-adnan\Artillery> copy artillery-job-tmpl.yaml ./jobs/job-1.yaml
+```
+Open `./jobs/job-1.yaml` in a text editor and change `name: artilleryjob-$NO` to `name: artilleryjob-1`
+
+Run the job
+```
+C:\k8-traffic-generator\upwork-devs\faisal-adnan\Artillery> kubectl create -f ./jobs/job-1.yaml
+job.batch/artilleryjob-1 created
+```
