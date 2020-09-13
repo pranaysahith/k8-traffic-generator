@@ -1,6 +1,6 @@
 # Downloader
 
-This container downloads a single object from S3.
+This container downloads a single object from S3 and puts it under `/output`.
 
 ## Configuration
 
