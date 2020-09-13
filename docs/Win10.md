@@ -41,7 +41,7 @@ Run each line starting with `$Env:`. This will be needed only once. Then switch 
 & minikube -p minikube docker-env | Invoke-Expression
 ```
 ### Noticed flaws
-In some cases, Minikube fails to download container images from the Docker hub. The downloads start but then get frozen. This usually causes failure of deployments in minikube. The easiest way found to get around this is to restart minikube, switch on minikube docker environment, and pull the corresponding image there. 
+In some cases, Minikube fails to download container images from the Docker hub. The downloads start but then get frozen. This usually causes failure of deployments in minikube. A workaround for this is to switch on the minikube docker environment, and pull the corresponding image there. 
 ## ELK
 The most trivial way to deploy ELK in local Minikube setup is with the following manifest (elk.yaml):
 ```
@@ -199,7 +199,7 @@ Got to the Artillery directory
 ```
 C:\> cd C:\k8-traffic-generator\upwork-devs\faisal-adnan\Artillery
 ```
-Create secret
+Create a secret
 ```
 PS C:\k8-traffic-generator\upwork-devs\faisal-adnan\Artillery> kubectl create secret generic artilleryconf --from-file=artillery-conf.yml
 secret/artilleryconf created
