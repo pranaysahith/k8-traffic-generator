@@ -1,0 +1,22 @@
+[
+    {
+        "host": "gw-nginx-service.local",
+        "port": 30914,
+        "path": "/",
+        "protocol": "http:",
+        "method": "GET",
+        "headers": {
+            "Content-Type": "application/json"
+        }
+    },
+    {
+        "host": "gw-nginx-service.local",
+        "port": 30914,
+        "path": "/fake-path",
+        "protocol": "http:",
+        "method": "GET",
+        "headers": {
+            "Content-Type": "application/json"
+        }
+    }
+]
