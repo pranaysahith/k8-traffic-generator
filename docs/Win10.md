@@ -104,17 +104,38 @@ For ELK deployment with a Filebeat POD see step by step instructions at:
 
 https://github.com/filetrust/k8-traffic-generator/blob/master/upwork-devs/faisal-adnan/elk/HOWTO-ELK.md
 
+Below is the command sequence run in Windows PowerShell
+
+```
+PS C:\WINDOWS\system32> & minikube -p minikube docker-env | Invoke-Expression
+PS C:\WINDOWS\system32> cd C:\Projects\Glasswall\k8-traffic-generator\upwork-devs\faisal-adnan\elk
+PS C:\Projects\Glasswall\k8-traffic-generator\upwork-devs\faisal-adnan\elk> kubectl apply -f .\all-in-one.yaml
+......
+PS C:\Projects\Glasswall\k8-traffic-generator\upwork-devs\faisal-adnan\elk> kubectl apply -f .\tenant.yml
+elasticsearch.elasticsearch.k8s.elastic.co/quickstart created
+kibana.kibana.k8s.elastic.co/quickstart created
+beat.beat.k8s.elastic.co/quickstart created
+PS C:\Projects\Glasswall\k8-traffic-generator\upwork-devs\faisal-adnan\elk>
+
+```
+After the command is run it will take some time (about 5 min) to bring the deployment to a fully running state.
+
 ### ELK with Pakcetbeat
 For ELK deployment with a Packetbeat POD see step by step instructions at:
 
-https://github.com/filetrust/k8-traffic-generator/tree/master/upwork-devs/harut-gigoryan/packetbeat-poc  
+https://github.com/filetrust/k8-traffic-generator/tree/master/upwork-devs/harut-gigoryan/packetbeat-poc   
 
 ## Minio
-The step by step guide for deploying Minio 
+### Single POD Minio deployment
+The step by step guide for deploying single POD Minio has been tested on Windows 10:
+
+https://github.com/filetrust/k8-traffic-generator/tree/master/upwork-devs/faisal-adnan/Minio
+
+### Double POD Minio deployment with a traffic generation POD
+The following step by step guide (that utilizes Nodeport to access the Minio PODs) has been tested on Windows 10:
 
 https://github.com/filetrust/k8-traffic-generator/tree/master/upwork-devs/susanta-gautam/minio-traffic-generator/minio
 
-utilizing Nodeport, has been tested on Windows 10.
 
 ## JMeter
 To deploy a JMeter POD firstly build a docker image from: 
@@ -122,6 +143,7 @@ https://github.com/filetrust/k8-traffic-generator/tree/master/upwork-devs/faisal
 utilizing minikube docker environment in Windows PowerShell (as explained above): 
 ```
 PS C:\WINDOWS\system32> & minikube -p minikube docker-env | Invoke-Expression
+PS C:\WINDOWS\system32> docker pull egaillardon/jmeter-plugins:5.2.1-2.0.0
 PS C:\WINDOWS\system32> cd C:\Projects\Glasswall\k8-traffic-generator\upwork-devs\faisal-adnan\JMeter
 PS C:\Projects\Glasswall\k8-traffic-generator\upwork-devs\faisal-adnan\JMeter> docker build -t test/jmeter .
 ```
