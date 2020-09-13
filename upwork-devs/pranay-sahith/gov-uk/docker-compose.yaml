@@ -12,3 +12,7 @@ services:
       NUM_FILES: "10"
       LOOP: "1"
       RUN_FOR_MINS: "4"
+      ELASTIC_HOST: "localhost"
+      ELASTIC_PORT: "9200"
+      ELASTIC_USER: "elastic"
+      ELASTIC_PASSWORD: "updateme"
