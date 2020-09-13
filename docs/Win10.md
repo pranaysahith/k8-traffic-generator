@@ -19,7 +19,7 @@ folder. This is where most Windows utilities are located.
 Minikube has its own docker environment. One may need to access to clean cached container images. Developers may use it for building the images to be utilized by the local Minikube setup. 
 To enable the minicube docker environment to run the command in elevated Windows PowerShell:
 ```
-PS C:\WINDOWS\system32> minikube docker-env
+PS C:> minikube docker-env
 ```
 The result will look similar to the following:
 ```
@@ -107,15 +107,15 @@ https://github.com/filetrust/k8-traffic-generator/blob/master/upwork-devs/faisal
 Below is the command sequence run in Windows PowerShell
 
 ```
-PS C:\WINDOWS\system32> & minikube -p minikube docker-env | Invoke-Expression
-PS C:\WINDOWS\system32> cd C:\Projects\Glasswall\k8-traffic-generator\upwork-devs\faisal-adnan\elk
-PS C:\Projects\Glasswall\k8-traffic-generator\upwork-devs\faisal-adnan\elk> kubectl apply -f .\all-in-one.yaml
+PS C:> & minikube -p minikube docker-env | Invoke-Expression
+PS C:> cd C:\k8-traffic-generator\upwork-devs\faisal-adnan\elk
+PS C:\k8-traffic-generator\upwork-devs\faisal-adnan\elk> kubectl apply -f .\all-in-one.yaml
 ......
-PS C:\Projects\Glasswall\k8-traffic-generator\upwork-devs\faisal-adnan\elk> kubectl apply -f .\tenant.yml
+PS C:\k8-traffic-generator\upwork-devs\faisal-adnan\elk> kubectl apply -f .\tenant.yml
 elasticsearch.elasticsearch.k8s.elastic.co/quickstart created
 kibana.kibana.k8s.elastic.co/quickstart created
 beat.beat.k8s.elastic.co/quickstart created
-PS C:\Projects\Glasswall\k8-traffic-generator\upwork-devs\faisal-adnan\elk>
+PS C:\k8-traffic-generator\upwork-devs\faisal-adnan\elk>
 
 ```
 After the command is run it will take some time (about 5 min) to bring the deployment to a fully running state.
@@ -138,18 +138,38 @@ https://github.com/filetrust/k8-traffic-generator/tree/master/upwork-devs/susant
 
 
 ## JMeter
-To deploy a JMeter POD firstly build a docker image from: 
-https://github.com/filetrust/k8-traffic-generator/tree/master/upwork-devs/faisal-adnan/JMeter
-utilizing minikube docker environment in Windows PowerShell (as explained above): 
+
+Deploy ELK with filebeat POD and a single POD Minio as described above
+
 ```
-PS C:\WINDOWS\system32> & minikube -p minikube docker-env | Invoke-Expression
-PS C:\WINDOWS\system32> docker pull egaillardon/jmeter-plugins:5.2.1-2.0.0
-PS C:\WINDOWS\system32> cd C:\Projects\Glasswall\k8-traffic-generator\upwork-devs\faisal-adnan\JMeter
-PS C:\Projects\Glasswall\k8-traffic-generator\upwork-devs\faisal-adnan\JMeter> docker build -t test/jmeter .
+C:> & minikube -p minikube docker-env | Invoke-Expression
+C:> docker pull peltops/gws_jmeter:v1
+......
 ```
-Then deploy the POD:
+
+Stop and remove previously started JMeter jobs
 ```
-PS kubectl apply -f test/jmeter
+C:\> kubectl delete --ignore-not-found jobs -l jobgroup=jmeter
+C:\> kubectl delete --ignore-not-found secret jmeterconf
+```
+Create JMeter secret
+```
+C:\> cd C:\k8-traffic-generator\upwork-devs\faisal-adnan\JMeter
+C:\k8-traffic-generator\upwork-devs\faisal-adnan\JMeter> cp .\gws.jmx .\jmeter-conf.gmx
+C:\k8-traffic-generator\upwork-devs\faisal-adnan\JMeter> kubectl create secret generic jmeterconf --from-file=jmeter-conf.gmx
+secret/jmeterconf created
+```
+Create JMeter job manifest
+```
+C:\k8-traffic-generator\upwork-devs\faisal-adnan\JMeter> mkdir jmeter-jobs
+C:\k8-traffic-generator\upwork-devs\faisal-adnan\JMeter> cp jmeter-job-tmpl.yaml ./jmeter-jobs/job-1.yaml
+
+```
+In ./jmeter-jobs/job-1.yaml change `name: jmeterjob-$NO` to `name: jmeterjob-1`
+
+Now create the job
+```
+C:\k8-traffic-generator\upwork-devs\faisal-adnan\JMeter> kubectl create -f ./jmeter-jobs/job-1.yaml
 ```
 
 ## Artillery
