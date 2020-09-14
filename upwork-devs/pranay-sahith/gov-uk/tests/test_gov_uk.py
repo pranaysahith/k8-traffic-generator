@@ -27,14 +27,14 @@ class TestGovUK(TestCase):
         elastic_port = os.getenv("ELASTIC_PORT", "9200")
         elastic_username = os.getenv("ELASTIC_USER")
         elastic_password = os.getenv("ELASTIC_PASSWORD")
-        index_name = os.getenv("INDEX_NAME", "tg_test_results")
+        cls.index_name = os.getenv("INDEX_NAME", "tg_test_results")
         tg = TrafficGenerator(gov_uk_url)
         asyncio.get_event_loop().run_until_complete(tg.run(num_files=num_files))
         cls.file_drop = FileDrop(file_drop_url)
         cls.ship_test_results_to_elastic = os.getenv("SHIP_TO_ELASTIC", "0")
         if cls.ship_test_results_to_elastic == "1":
             cls.es = ElasticService(elastic_host, elastic_port, elastic_username, elastic_password)
-            cls.es.create_index(index_name)
+            cls.es.create_index(cls.index_name)
 
     def test_is_clean(self):
         guid = uuid4()
