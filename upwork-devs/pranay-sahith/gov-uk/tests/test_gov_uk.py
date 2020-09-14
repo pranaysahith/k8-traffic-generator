@@ -31,8 +31,8 @@ class TestGovUK(TestCase):
         tg = TrafficGenerator(gov_uk_url)
         asyncio.get_event_loop().run_until_complete(tg.run(num_files=num_files))
         cls.file_drop = FileDrop(file_drop_url)
-        cls.ship_test_results_to_elastic = bool(os.getenv("SHIP_TO_ELASTIC", 0))
-        if cls.ship_test_results_to_elastic:
+        cls.ship_test_results_to_elastic = os.getenv("SHIP_TO_ELASTIC", "0")
+        if cls.ship_test_results_to_elastic == "1":
             cls.es = ElasticService(elastic_host, elastic_port, elastic_username, elastic_password)
             cls.es.create_index(index_name)
 
