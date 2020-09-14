@@ -23,11 +23,11 @@ type Urls struct {
 }
 
 //Thefile is
-func Thefile(x string) {
-	y := config.Config()
+func Thefile(m string, thetype string) {
+	y, _ := config.Config()
 
 	status := []Urls{}
-	file, _ := os.Open(x)
+	file, _ := os.Open(m)
 	defer file.Close()
 	r := csv.NewReader(file)
 	for {
@@ -47,14 +47,14 @@ func Thefile(x string) {
 	for _, eachline := range status {
 		url := eachline.URL
 		filename := eachline.Name
-
-		if eachline.Type == "request" {
+		//if thetype =="download"{
+		if eachline.Type == "request" || thetype == "download" {
 			resp, err := client.Get(eachline.URL)
 			if err != nil {
 				panic(err)
 			}
 
-			/*time := timeresponse.Getresptime(eachline.URL)
+			//	time := timeresponse.Getresptime(eachline.URL)
 
 			/*logfile, err := os.OpenFile("logrequst.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 			if err != nil {
@@ -78,7 +78,7 @@ func Thefile(x string) {
 				panic(err)
 			}
 
-		} else if eachline.Type == "browser" {
+		} else if eachline.Type == "browser" || thetype == "open" {
 			ctx, cancel := chromedp.NewContext(context.Background(), chromedp.WithDebugf(log.Printf))
 			defer cancel()
 			//time := timeresponse.Getresptime(eachline.URL)
@@ -98,6 +98,26 @@ func Thefile(x string) {
 			}
 			logger := log.New(logfile, "", log.LstdFlags)
 			logger.Println(eachline.URL, time)*/
+		} else if thetype == "upload" {
+			client := &http.Client{}
+			f, err := os.Open("aa.txt")
+			if err != nil {
+				panic(err)
+			}
+			defer f.Close()
+			//	postData := make([]byte, 100)
+			req, err := http.NewRequest("POST", eachline.URL, f)
+			//req, err := http.NewRequest("POST", eachline.URL, bytes.NewReader(postData))
+			if err != nil {
+				os.Exit(1)
+			}
+			req.Header.Add("User-Agent", "myClient")
+			resp, err := client.Do(req)
+			if err != nil {
+				panic(err)
+			}
+			defer resp.Body.Close()
+			fmt.Println(resp, "/n")
 
 		} else {
 			break
