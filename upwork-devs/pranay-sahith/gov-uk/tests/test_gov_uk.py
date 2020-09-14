@@ -22,15 +22,19 @@ class TestGovUK(TestCase):
     def setUpClass(cls):
         gov_uk_url = os.getenv("GOV_UK_URL", "https://www.gov.uk.glasswall-icap.com")
         file_drop_url = os.getenv("FILE_DROP_URL", "https://glasswall-file-drop.azurewebsites.net")
-        num_files = int(os.getenv("NUM_FILES", 10))
+        num_files = int(os.getenv("NUM_FILES", 1))
         elastic_host = os.getenv("ELASTIC_HOST", "localhost")
         elastic_port = os.getenv("ELASTIC_PORT", "9200")
         elastic_username = os.getenv("ELASTIC_USER")
         elastic_password = os.getenv("ELASTIC_PASSWORD")
+        index_name = os.getenv("INDEX_NAME", "tg_test_results")
         tg = TrafficGenerator(gov_uk_url)
         asyncio.get_event_loop().run_until_complete(tg.run(num_files=num_files))
         cls.file_drop = FileDrop(file_drop_url)
-        cls.es = ElasticService(elastic_host, elastic_port, elastic_username, elastic_password)
+        cls.ship_test_results_to_elastic = bool(os.getenv("SHIP_TO_ELASTIC", 0))
+        if cls.ship_test_results_to_elastic:
+            cls.es = ElasticService(elastic_host, elastic_port, elastic_username, elastic_password)
+            cls.es.create_index(index_name)
 
     def test_is_clean(self):
         guid = uuid4()
@@ -46,42 +50,45 @@ class TestGovUK(TestCase):
                 log.info(each_file + ": " + result)
                 assert result == "File is clean!"
                 time.sleep(3)
-            end_time = datetime.now()
-            test_duration = (end_time - start_time).microseconds
-            test_results = {
-                "testId": guid,          
-                "start": start_time,                 
-                "end": end_time,
-                "testDuration": test_duration, 
-                "testScenarionName": "TestGovUK",
-                "testScenarionId": "1",
-                "testStepNo": 1,
-                "testStepName": "test_is_clean",
-                "testDocUrl": None,
-                "result": "success",
-                "error": None,
-                "errorMessage": None,
-            }
-            self.es.create_doc("tg_test_results", guid, test_results)
+
+            if self.ship_test_results_to_elastic:
+                end_time = datetime.now()
+                test_duration = (end_time - start_time).microseconds
+                test_results = {
+                    "testId": guid,          
+                    "start": start_time,                 
+                    "end": end_time,
+                    "testDuration": test_duration, 
+                    "testScenarionName": "TestGovUK",
+                    "testScenarionId": "1",
+                    "testStepNo": 1,
+                    "testStepName": "test_is_clean",
+                    "testDocUrl": None,
+                    "result": "success",
+                    "error": None,
+                    "errorMessage": None,
+                }
+                self.es.create_doc(self.index_name, guid, test_results)
         except Exception as e:
             log.error(e)
-            end_time = datetime.now()
-            test_duration = (end_time - start_time).microseconds
-            test_results = {
-                "testId": guid,          
-                "start": start_time,                 
-                "end": end_time,
-                "testDuration": test_duration,
-                "testScenarionName": "TestGovUK",
-                "testScenarionId": "1",
-                "testStepNo": 1,
-                "testStepName": "test_is_clean",
-                "testDocUrl": None,
-                "result": "fail",
-                "error": None,
-                "errorMessage": str(e),
-            }
-            self.es.create_doc("tg_test_results", guid, test_results)
+            if self.ship_test_results_to_elastic:
+                end_time = datetime.now()
+                test_duration = (end_time - start_time).microseconds
+                test_results = {
+                    "testId": guid,          
+                    "start": start_time,                 
+                    "end": end_time,
+                    "testDuration": test_duration,
+                    "testScenarionName": "TestGovUK",
+                    "testScenarionId": "1",
+                    "testStepNo": 1,
+                    "testStepName": "test_is_clean",
+                    "testDocUrl": None,
+                    "result": "fail",
+                    "error": None,
+                    "errorMessage": str(e),
+                }
+                self.es.create_doc(self.index_name, guid, test_results)
 
 
     def test_tag(self):
@@ -94,42 +101,45 @@ class TestGovUK(TestCase):
                 raw = parser.from_file(each_file)
                 log.info(f"parsed file: {each_file}")
                 assert "Glasswall Approved" in raw["content"]
-            end_time = datetime.now()
-            test_duration = (end_time - start_time).microseconds
-            test_results = {
-                "testId": guid,          
-                "start": start_time,                 
-                "end": end_time,
-                "testDuration": test_duration, 
-                "testScenarionName": "TestGovUK",
-                "testScenarionId": "1",
-                "testStepNo": 1,
-                "testStepName": "test_tag",
-                "testDocUrl": None,
-                "result": "success",
-                "error": None,
-                "errorMessage": None,
-            }
-            self.es.create_doc("tg_test_results", guid, test_results)
+            
+            if self.ship_test_results_to_elastic:
+                end_time = datetime.now()
+                test_duration = (end_time - start_time).microseconds
+                test_results = {
+                    "testId": guid,          
+                    "start": start_time,                 
+                    "end": end_time,
+                    "testDuration": test_duration, 
+                    "testScenarionName": "TestGovUK",
+                    "testScenarionId": "1",
+                    "testStepNo": 2,
+                    "testStepName": "test_tag",
+                    "testDocUrl": None,
+                    "result": "success",
+                    "error": None,
+                    "errorMessage": None,
+                }
+                self.es.create_doc(self.index_name, guid, test_results)
         except Exception as e:
             log.error(e)
-            end_time = datetime.now()
-            test_duration = (end_time - start_time).microseconds
-            test_results = {
-                "testId": guid,          
-                "start": start_time,                 
-                "end": end_time,
-                "testDuration": test_duration,
-                "testScenarionName": "TestGovUK",
-                "testScenarionId": "1",
-                "testStepNo": 1,
-                "testStepName": "test_tag",
-                "testDocUrl": None,
-                "result": "fail",
-                "error": None,
-                "errorMessage": str(e),
-            }
-            self.es.create_doc("tg_test_results", guid, test_results)
+            if self.ship_test_results_to_elastic:
+                end_time = datetime.now()
+                test_duration = (end_time - start_time).microseconds
+                test_results = {
+                    "testId": guid,          
+                    "start": start_time,                 
+                    "end": end_time,
+                    "testDuration": test_duration,
+                    "testScenarionName": "TestGovUK",
+                    "testScenarionId": "1",
+                    "testStepNo": 2,
+                    "testStepName": "test_tag",
+                    "testDocUrl": None,
+                    "result": "fail",
+                    "error": str(e),
+                    "errorMessage": str(e),
+                }
+                self.es.create_doc(self.index_name, guid, test_results)
 
     @classmethod
     def tearDownClass(cls):

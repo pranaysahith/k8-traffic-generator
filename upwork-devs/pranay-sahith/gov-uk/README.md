@@ -16,7 +16,19 @@
 `docker-compose up --build`
 
 
-## To run in kuberentes, deploy the job:
+## To run in kuberentes:
 
-`kubectl deploy -f gov-uk_job.yaml`
 
+### Deploy Elastic to k8s by following /upwork-devs/faisal-adnan/elk/HOWTO-ELK.md
+
+### Create a secret with elastic password in the namespace where traffic generator needs to be deployed
+
+```
+kubectl create secret generic elastic-secret --from-literal=elastic-password='update_this_with_elastic_pwd'
+```
+
+###  Deploy the job
+
+```
+kubectl deploy -f gov-uk_job.yaml
+```

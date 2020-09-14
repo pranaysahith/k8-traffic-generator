@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: traffic-generator
-        image: pranaysahith/traffic-generator-gov-uk:0.0.2
+        image: pranaysahith/traffic-generator-gov-uk:0.0.4
         imagePullPolicy: IfNotPresent
         env:
           - name: GOV_UK_URL
@@ -30,6 +30,19 @@ spec:
             value: "1"
           - name: RUN_FOR_MINS
             value: "10"
+          - name: SHIP_TO_ELASTIC
+            value: "1"
+          - name: ELASTIC_HOST
+            value: "quickstart-es-http.elastic-system.svc.cluster.local"
+          - name: ELASTIC_PORT
+            value: "9200"
+          - name: ELASTIC_USER
+            value: "elastic"
+          - name: ELASTIC_PASSWORD
+            valueFrom:
+                secretKeyRef:
+                  key: "elastic-password" 
+                  name: "elastic-secret"
         workingDir: /app
       restartPolicy: Never  
 ---
