@@ -51,7 +51,7 @@ class TestGovUK(TestCase):
                 assert result == "File is clean!"
                 time.sleep(3)
 
-            if self.ship_test_results_to_elastic:
+            if self.ship_test_results_to_elastic == "1":
                 end_time = datetime.now()
                 test_duration = (end_time - start_time).microseconds
                 test_results = {
@@ -71,7 +71,7 @@ class TestGovUK(TestCase):
                 self.es.create_doc(self.index_name, guid, test_results)
         except Exception as e:
             log.error(e)
-            if self.ship_test_results_to_elastic:
+            if self.ship_test_results_to_elastic == "1":
                 end_time = datetime.now()
                 test_duration = (end_time - start_time).microseconds
                 test_results = {
@@ -102,7 +102,7 @@ class TestGovUK(TestCase):
                 log.info(f"parsed file: {each_file}")
                 assert "Glasswall Approved" in raw["content"]
             
-            if self.ship_test_results_to_elastic:
+            if self.ship_test_results_to_elastic == "1":
                 end_time = datetime.now()
                 test_duration = (end_time - start_time).microseconds
                 test_results = {
@@ -122,7 +122,7 @@ class TestGovUK(TestCase):
                 self.es.create_doc(self.index_name, guid, test_results)
         except Exception as e:
             log.error(e)
-            if self.ship_test_results_to_elastic:
+            if self.ship_test_results_to_elastic == "1":
                 end_time = datetime.now()
                 test_duration = (end_time - start_time).microseconds
                 test_results = {
