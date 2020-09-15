@@ -1,4 +1,3 @@
-#import pdb
 import os
 import logging
 import logging.config
@@ -10,11 +9,7 @@ import time
 import uuid
 from botocore.client import Config
 from botocore.exceptions import ClientError
-from threading import Thread
-#from minio import Minio
 from minio.error import ResponseError
-
-#logger = logging.getLogger('minio')
 
 class ElkJsonFormatter(jsonlogger.JsonFormatter):
     def add_fields(self, log_record, record, message_dict):
@@ -25,8 +20,6 @@ class ElkJsonFormatter(jsonlogger.JsonFormatter):
 
 logging.config.fileConfig('logging.conf')
 logger = logging.getLogger(uuid.uuid1().urn)
-
-#logging.info('Application running!')
 
 file_path = '/files/'
 
@@ -42,7 +35,6 @@ TGT_BUCKET = os.getenv('TARGET_MINIO_BUCKET', 'dummy')
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 UPLOAD_TO_TARGET = os.getenv('UPLOAD_TO_TARGET', 'TRUE')
-#IN_LOOP = os.getenv('IN_LOOP', 'TRUE')
 
 class Main():
 
@@ -51,15 +43,14 @@ class Main():
         logging.basicConfig(level=getattr(logging, level))
 
     @staticmethod
-    def download_from_minio(UPLOAD_TO_TARGET):
+    def download_from_minio():
 
         try:
             s3 = boto3.resource('s3', endpoint_url=SRC_URL, aws_access_key_id=SRC_ACCESS_KEY,
                                 aws_secret_access_key=SRC_SECRET_KEY, config=Config(signature_version='s3v4'))
             logger.debug('Check if the Bucket {} exists'.format(SRC_BUCKET))
             if (s3.Bucket(SRC_BUCKET) in s3.buckets.all()):
-                logger.debug(
-                    'Bucket {} found. Starting to download files from it.'.format(SRC_BUCKET))
+                logger.debug('Bucket {} found. Starting to download files from it.'.format(SRC_BUCKET))
                 bucket = s3.Bucket(SRC_BUCKET)
                 for file in bucket.objects.all():
                     path, filename = os.path.split(file.key)
@@ -67,16 +58,14 @@ class Main():
                     logger.debug('Downloading file {}.'.format(filename))
                     bucket.download_file(file.key, obj_file)
                     if UPLOAD_TO_TARGET.upper() == 'TRUE':
-                        logger.debug(
-                            'Calling function to upload the file {} to next minio.'.format(filename))
+                        logger.debug('Calling function to upload the file {} to next minio.'.format(filename))
                         Main.upload_to_minio(file_path, filename)
                     file.delete()
                     # we only are intrested in processing the first file if it exists
                     break
 
         except ClientError as e:
-            logger.error(
-                "Cannot Connect to the Minio {}. Please Verify your credentials.".format(URL))
+            logger.error("Cannot Connect to the Minio {}. Please Verify your credentials.".format(URL))
         except Exception as e:
             logger.error(e)
 
@@ -86,18 +75,15 @@ class Main():
         try:
             s3 = boto3.resource('s3', endpoint_url=TGT_URL, aws_access_key_id=TGT_ACCESS_KEY,
                                 aws_secret_access_key=TGT_SECRET_KEY, config=Config(signature_version='s3v4'))
-            logger.debug(
-                'Checking if the Bucket to upload files exists or not.')
+            logger.debug('Checking if the Bucket to upload files exists or not.')
             if (s3.Bucket(TGT_BUCKET) in s3.buckets.all()) == False:
                 logger.info('Bucket not Found. Creating Bucket.')
                 s3.create_bucket(Bucket=TGT_BUCKET)
-            logger.debug(
-                'Uploading file to bucket {} minio {}'.format(TGT_BUCKET, TGT_URL))
+            logger.debug('Uploading file to bucket {} minio {}'.format(TGT_BUCKET, TGT_URL))
             file_to_upload = file_path + filename
             s3.Bucket(TGT_BUCKET).upload_file(file_to_upload, filename)
         except ClientError as e:
-            logger.error(
-                "Cannot connect to the minio {}. Please vefify the Credentials.".format(TGT_URL))
+            logger.error("Cannot connect to the minio {}. Please vefify the Credentials.".format(TGT_URL))
         except Exception as e:
             logger.info(e)
 
@@ -107,49 +93,32 @@ class Main():
         logger.info('Checking if the Target Minio {} is avaliable.'.format(TGT_URL))
         if UPLOAD_TO_TARGET.upper() == 'TRUE':
             URL = TGT_URL + endpoint
-
-            for i in range(0, 1):
-                try:
-                    response = requests.get(URL, timeout=2)
-                    if response.status_code == 200:
-                        logger.info('Recieved Response code {} from {}'.format(
-                            response.status_code, URL))
-                        break
-                    else:
-                        if i == 1:
-                            logger.error(
-                                'Could Not connect to Target Minio {}.'.format(URL))
-                            exit(2)
-                except:
-                    logger.error(
-                        'Could not connect to Target Minio {}.'.format(URL))
-
-        for j in range(0, 1):
-            URL = SRC_URL + endpoint
-            logger.info('Checking if the Source Minio {} is avaliable.'.format(SRC_URL))
             try:
-                response2 = requests.get(URL, timeout=2)
-                if response2.status_code == 200:
-                    logger.info('Recieved status code {} from Minio {}.'.format(
-                        response2.status_code, URL))
-                    Main.download_from_minio(UPLOAD_TO_TARGET)
-#                    
-#                    if IN_LOOP.upper() == 'TRUE':
-#                        logger.info('Starting Application in Loop Mode.')
-#                        while True:
-#                            Main.download_from_minio(UPLOAD_TO_TARGET)
-#                       
+                response = requests.get(URL, timeout=2)
+                if response.status_code == 200:
+                    logger.info('Recieved Response code {} from {}'.format(response.status_code, URL))
                 else:
-                    if j == 1:
-                        logger.error(
-                            'Could not connect to the Soruce Minio {}.'.format(URL))
-                        exit(1)
+                    logger.error('Could Not connect to Target Minio {}.'.format(URL))
+                    exit(1)
             except:
-                logger.error('Could not connect to Minio {}'.format(URL))
+                logger.error(
+                    'Could not connect to Target Minio {}.'.format(URL))
+
+        URL = SRC_URL + endpoint
+        logger.info('Checking if the Source Minio {} is avaliable.'.format(SRC_URL))
+        try:
+            response2 = requests.get(URL, timeout=2)
+            if response2.status_code == 200:
+                logger.info('Recieved status code {} from Minio {}.'.format(response2.status_code, URL))
+                Main.download_from_minio()
+            else:
+                logger.error('Could not connect to the Soruce Minio {}.'.format(URL))
+                exit(2)
+        except:
+            logger.error('Could not connect to Minio {}'.format(URL))
 
     @staticmethod
     def main():
-#        pdb.set_trace()
         Main.log_level(LOG_LEVEL)
         time.sleep(5)
         if os.name == 'nt':
