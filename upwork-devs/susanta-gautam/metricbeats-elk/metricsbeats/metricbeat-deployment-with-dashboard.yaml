@@ -126,7 +126,6 @@ spec:
       containers:
       - name: metricbeat
         image: docker.elastic.co/beats/metricbeat:7.9.1
-        # command: ['sh', '-c', 'echo "Hello, Kubernetes!" && sleep 3600']
         args: [
           "-c", "/etc/metricbeat.yml",
           "-e",
@@ -164,9 +163,6 @@ spec:
         - name: modules
           mountPath: /usr/share/metricbeat/modules.d
           readOnly: true
-        # - name: dashboard
-        #   mountPath: /usr/share/metricbeat/dashboard/7/dashboard/Metricbeat-containers-overview.json
-        #   subPath: Metricbeat-containers-overview.json
       volumes:
       - name: config
         configMap:
@@ -176,26 +172,4 @@ spec:
         configMap:
           defaultMode: 0640
           name: metricbeat-deployment-modules
-      # - name: dashboard
-      #   configMap:
-      #     name: dashboard
-      #     items:
-      #       - key: Metricbeat-containers-overview.json
-      #         path: Metricbeat-containers-overview.json
-            # - key: Metricbeat-kubernetes-apiserver.json
-            #   path: Metricbeat-kubernetes-apiserver.json
-            # - key: Metricbeat-kubernetes-proxy.json
-            #   path: Metricbeat-kubernetes-proxy.json
-            # - key: Metricbeat-host-overview.json
-            #   path: Metricbeat-host-overview.json
-            # - key: Metricbeat-kubernetes-controller-manager.json
-            #   path: Metricbeat-kubernetes-controller-manager.json
-            # - key: Metricbeat-kubernetes-scheduler.json
-            #   path: Metricbeat-kubernetes-scheduler.json
-            # - key: Metricbeat-Host-Services-overview.json
-            #   path: Metricbeat-Host-Services-overview.json
-            # - key: Metricbeat-kubernetes-overview.json
-            #   path: Metricbeat-kubernetes-overview.json
-            # - key: Metricbeat-system-overview.json
-            #   path: Metricbeat-system-overview.json
 ---

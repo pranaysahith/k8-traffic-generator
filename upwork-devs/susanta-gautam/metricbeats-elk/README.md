@@ -5,7 +5,7 @@ Here we are using kubestate metrics and metricbeats to collect the kubernetes me
 1. kube-state-metrics:
     KubeStateMetrics is the application that will be deployed in the kubesystem namespace. It will be responsible for collecting various information from the kubernetes apiserver. These metrics will then be collected by the metricbeat.
 2. Metricbeat(Deployment):
-    We will be deploying one replica of the metricbeat that will be solely responsible for collecting the information from the kubernetes component such as scheduler, kube-controller, apiserver metrics, metrics from kube-state-metric. I have configured it to be deployed in master node as it needs to connect to the kube-scheduler and kube-controller which in default run on master node and bind the localhost port(127.0.0.1). If we want this comonennt to run on the other node, there are two options. That is either we bind the scheduler and controller on host (0.0.0.0) or we give up on the metrics of these two component. In case you want to giveup on the component please comment the following section from the configmap of file [metricbeat-deployment-with-dashboard.yaml](metricbeats/metricbeat-deployment-with-dashboard.yaml) or [metricbeat-deployment.yaml](metricbeats/metricbeat-deployment.yaml) based on your preference. The section to comment is:
+    We will be deploying one replica of the metricbeat that will be solely responsible for collecting the information from the kubernetes component such as scheduler, kube-controller, apiserver metrics, metrics from kube-state-metric. I have configured it to be deployed in master node as it needs to connect to the kube-scheduler and kube-controller which in default run on master node and bind the localhost port(127.0.0.1). If we want this comonennt to run on the other node, there are two options. That is either we bind the scheduler and controller on host (0.0.0.0) or we give up on the metrics of these two component. In case you want to giveup on the component please comment the following section from the configmap of file [metricbeat-deployment-with-dashboard.yaml](metricbeats/metricbeat-deployment-with-dashboard.yaml) or [metricbeat-deployment.yaml](metricbeats/metricbeat-deployment.yaml) based on your preference. The section to comment out or remove is:
     ```YAML
     - module: kubernetes
       enabled: true
@@ -32,7 +32,19 @@ Here we are using kubestate metrics and metricbeats to collect the kubernetes me
 3. Metricbeat(daemonset):
     we will ne using the metricbeat daemonset to collect the metrics of the host system. The daemonset will be collecting the the data of the system like disk usage, cpu usage, cpu load, network stats etc. It will also collect the information from kubelet that are pertaining to node, volumes, pod, system and kube-proxy. 
 4. ElasticSearch:
-    We will be sending the data to elastic search from all the metricbeat instances. You can use the another project for configuring the ELK stack and docs are avaliable in [documentation](https://github.com/filetrust/k8-traffic-generator/tree/master/docs). Keep in mind you will need to provide the username and password for the elasticsearch and you will need to provide the valid elasticsearch url(in k8s case service name).
+    We will be sending the data to elastic search from all the metricbeat instances. You can use the another project for configuring the ELK stack and docs are avaliable in [documentation](https://github.com/filetrust/k8-traffic-generator/tree/master/docs). Keep in mind you will need to provide the username and password for the elasticsearch through the environment variable and you will need to provide the valid elasticsearch url(in k8s case service name).
+    You will have to provide the values in this section. Uncomment the username and password section and provide the valid value for it.
+    ```YAML
+        - name: ELASTICSEARCH_HOST
+          value: elasticsearch-master
+        - name: ELASTICSEARCH_PORT
+          value: "9200"
+        # - name: ELASTICSEARCH_USERNAME
+        #   value: elastic
+        # - name: ELASTICSEARCH_PASSWORD
+        #   value: changeme
+    ```
+    IF the elasticsearch is password protected please uncomment this section in configmap too.
     ```YAML
     output.elasticsearch:
       hosts: ['${ELASTICSEARCH_HOST:elasticsearch-master}:${ELASTICSEARCH_PORT:9200}']

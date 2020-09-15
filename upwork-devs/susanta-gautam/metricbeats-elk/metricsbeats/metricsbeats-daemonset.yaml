@@ -95,6 +95,9 @@ spec:
       labels:
         k8s-app: metricbeat
     spec:
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
       serviceAccountName: metricbeat
       terminationGracePeriodSeconds: 30
       hostNetwork: true
