@@ -1,0 +1,147 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  namespace: istio-system
+  name: istio-system-gateway
+spec:
+  selector:
+    istio: ingressgateway # use Istio default gateway implementation
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  namespace: cattle-prometheus
+  name: cattle-prometheus-gateway
+spec:
+  selector:
+    istio: ingressgateway # use Istio default gateway implementation
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  namespace: cattle-prometheus
+  name: prometheus-vs
+spec:
+  hosts:
+  - "prometheus-service.local"
+  gateways:
+  - cattle-prometheus-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        port:
+          number: 8080
+        #host: prometheus-operated
+        host: expose-prometheus-metrics
+
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  namespace: istio-system
+  name: kiali-vs
+spec:
+  hosts:
+  - "kiali-service.local"
+  gateways:
+  - istio-system-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        port:
+          number: 20001
+        host: kiali
+
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  namespace: istio-system
+  name: grafana-vs
+spec:
+  hosts:
+  - "grafana-service.local"
+  gateways:
+  - istio-system-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        port:
+          number: 3000
+        host: grafana
+
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  namespace: istio-system
+  name: jaeger-vs
+spec:
+  hosts:
+  - "jaeger-service.local"
+  gateways:
+  - istio-system-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        port:
+          number: 80
+        host: tracing
+
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  namespace: istio-system
+  name: zipkin-vs
+spec:
+  hosts:
+  - "zipkin-service.local"
+  gateways:
+  - istio-system-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        port:
+          number: 9411
+        host: zipkin
+
+
+
