@@ -11,7 +11,7 @@ import uuid
 from botocore.client import Config
 from botocore.exceptions import ClientError
 from threading import Thread
-from minio import Minio
+#from minio import Minio
 from minio.error import ResponseError
 
 #logger = logging.getLogger('minio')
@@ -30,19 +30,19 @@ logger = logging.getLogger(uuid.uuid1().urn)
 
 file_path = '/files/'
 
-SRC_URL = os.getenv('SOURCE_MINIO_URL', 'http://192.168.99.117:31501')
+SRC_URL = os.getenv('SOURCE_MINIO_URL', 'http://192.168.99.119:31404')
 SRC_ACCESS_KEY = os.getenv('SOURCE_MINIO_ACCESS_KEY', 'minio1')
 SRC_SECRET_KEY = os.getenv('SOURCE_MINIO_SECRET_KEY', 'minio1@123')
 SRC_BUCKET = os.getenv('SOURCE_MINIO_BUCKET', 'dummy')
 
-TGT_URL = os.getenv('TARGET_MINIO_URL', 'http://192.168.99.117:30876')
+TGT_URL = os.getenv('TARGET_MINIO_URL', 'http://192.168.99.119:31994')
 TGT_ACCESS_KEY = os.getenv('TARGET_MINIO_ACCESS_KEY', 'minio2')
 TGT_SECRET_KEY = os.getenv('TARGET_MINIO_SECRET_KEY', 'minio2@123')
 TGT_BUCKET = os.getenv('TARGET_MINIO_BUCKET', 'dummy')
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 UPLOAD_TO_TARGET = os.getenv('UPLOAD_TO_TARGET', 'TRUE')
-IN_LOOP = os.getenv('IN_LOOP', 'TRUE')
+#IN_LOOP = os.getenv('IN_LOOP', 'TRUE')
 
 class Main():
 
@@ -61,15 +61,18 @@ class Main():
                 logger.debug(
                     'Bucket {} found. Starting to download files from it.'.format(SRC_BUCKET))
                 bucket = s3.Bucket(SRC_BUCKET)
-                for files in bucket.objects.all():
-                    path, filename = os.path.split(files.key)
+                for file in bucket.objects.all():
+                    path, filename = os.path.split(file.key)
                     obj_file = file_path + filename
                     logger.debug('Downloading file {}.'.format(filename))
-                    bucket.download_file(files.key, obj_file)
+                    bucket.download_file(file.key, obj_file)
                     if UPLOAD_TO_TARGET.upper() == 'TRUE':
                         logger.debug(
                             'Calling function to upload the file {} to next minio.'.format(filename))
                         Main.upload_to_minio(file_path, filename)
+                    file.delete()
+                    # we only are intrested in processing the first file if it exists
+                    break
 
         except ClientError as e:
             logger.error(
@@ -113,7 +116,7 @@ class Main():
                             response.status_code, URL))
                         break
                     else:
-                        if i == 3:
+                        if i == 1:
                             logger.error(
                                 'Could Not connect to Target Minio {}.'.format(URL))
                             exit(2)
@@ -131,14 +134,13 @@ class Main():
                         response2.status_code, URL))
                     Main.download_from_minio(UPLOAD_TO_TARGET)
 #                    
-                    if IN_LOOP.upper() == 'TRUE':
-##                        pdb.set_trace()
-                        logger.info('Starting Application in Loop Mode.')
-                        while True:
-                            Main.download_from_minio(UPLOAD_TO_TARGET)
+#                    if IN_LOOP.upper() == 'TRUE':
+#                        logger.info('Starting Application in Loop Mode.')
+#                        while True:
+#                            Main.download_from_minio(UPLOAD_TO_TARGET)
 #                       
                 else:
-                    if j == 4:
+                    if j == 1:
                         logger.error(
                             'Could not connect to the Soruce Minio {}.'.format(URL))
                         exit(1)
