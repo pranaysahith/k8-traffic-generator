@@ -3,7 +3,7 @@ kind: Workflow
 metadata:
   generateName: local-rebuild-
 spec:
-  entrypoint: dispatcher
+  entrypoint: entrypoint
   arguments:
     parameters:
       - name: processor-image-registry
@@ -24,6 +24,12 @@ spec:
         value: yardenshoham/local-rebuild-dispatcher
       - name: dispatcher-image-tag
         value: latest
+      - name: lister-image-registry
+        value: docker.io
+      - name: lister-image-repository
+        value: yardenshoham/local-rebuild-argo-lister
+      - name: lister-image-tag
+        value: latest
       - name: endpoint
         value: play.min.io
       - name: accessKey
@@ -34,34 +40,20 @@ spec:
         value: 20200916104820-mydumper
 
   templates:
-    - name: dispatcher
-      inputs:
-        parameters:
-          - name: processor-image-registry
-          - name: processor-image-repository
-          - name: processor-image-tag
-          - name: downloader-image-registry
-          - name: downloader-image-repository
-          - name: downloader-image-tag
-          - name: dispatcher-image-registry
-          - name: dispatcher-image-repository
-          - name: dispatcher-image-tag
-          - name: endpoint
-          - name: accessKey
-          - name: secretKey
-          - name: bucketName
+    - name: entrypoint
+      steps:
+        - - name: list
+            template: lister
+
+    - name: lister
       container:
-        image: "{{inputs.parameters.dispatcher-image-registry}}/{{inputs.parameters.dispatcher-image-repository}}:{{inputs.parameters.dispatcher-image-tag}}"
+        image: "{{workflow.parameters.lister-image-registry}}/{{workflow.parameters.lister-image-repository}}:{{workflow.parameters.lister-image-tag}}"
         env:
-          - name: PROCESSOR_IMAGE
-            value: "{{inputs.parameters.processor-image-registry}}/{{inputs.parameters.processor-image-repository}}:{{inputs.parameters.processor-image-tag}}"
-          - name: DOWNLOADER_IMAGE
-            value: "{{inputs.parameters.downloader-image-registry}}/{{inputs.parameters.downloader-image-repository}}:{{inputs.parameters.downloader-image-tag}}"
           - name: ENDPOINT
-            value: "{{inputs.parameters.endpoint}}"
+            value: "{{workflow.parameters.endpoint}}"
           - name: ACCESS_KEY
-            value: "{{inputs.parameters.accessKey}}"
+            value: "{{workflow.parameters.accessKey}}"
           - name: SECRET_KEY
-            value: "{{inputs.parameters.secretKey}}"
+            value: "{{workflow.parameters.secretKey}}"
           - name: BUCKET_NAME
-            value: "{{inputs.parameters.bucketName}}"
+            value: "{{workflow.parameters.bucketName}}"
