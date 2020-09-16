@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: inspector
+  name: worker
   labels:
     app: python-minio
 spec:
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: python-script
-          image: ggrig/k8-traffic:python
+          image: ggrig/k8-traffic:re_worker
           env:
             - name: SOURCE_MINIO_URL
               value: "http://input-queue:9000"
@@ -38,3 +38,5 @@ spec:
             # Log Level (Default to Info)
             - name: LOG_LEVEL
               value: info
+            - name: API_TOKEN
+              value: YOUR_REBUILD_API_TOKEN

@@ -60,10 +60,10 @@ class Main():
                 obj_file = file_path + filename
                 logger.info('Downloading file {}.'.format(filename))
                 bucket.download_file(file.key, obj_file)
-                Main.rebuild_it(file_path, filename)
-                #Main.upload_to_minio(rebuild_path, filename)
-                Main.upload_to_minio(file_path, filename)
                 file.delete()
+                Main.rebuild_it(file_path, filename)
+                Main.upload_to_minio(rebuild_path, filename)
+                #Main.upload_to_minio(file_path, filename)
                 # we only are intrested in processing the first file if it exists
                 break
 
@@ -95,7 +95,7 @@ class Main():
                 # Write the sanitised file to output file path
                 with open(output_file_path, "wb") as f:
                     f.write(response.content)
-                logger.info("Successfully wrote file to:", os.path.abspath(output_file_path))
+                logger.info("The file has been successfully rebuild")
             else:
                 # An error occurred, raise it
                 logger.error("Rebuild Failed: {}", format(response.raise_for_status()))
