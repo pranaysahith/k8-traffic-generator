@@ -31,7 +31,7 @@ spec:
       - name: secretKey
         value: zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
       - name: bucketName
-        value: 11214005-feab-4059-a5e9-e2004b2f09f4
+        value: 20200916104820-mydumper
 
   templates:
     - name: dispatcher
