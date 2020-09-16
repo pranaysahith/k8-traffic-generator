@@ -9,7 +9,6 @@ import time
 import uuid
 from botocore.client import Config
 from botocore.exceptions import ClientError
-from minio.error import ResponseError
 
 class ElkJsonFormatter(jsonlogger.JsonFormatter):
     def add_fields(self, log_record, record, message_dict):
@@ -62,8 +61,8 @@ class Main():
                 logger.info('Downloading file {}.'.format(filename))
                 bucket.download_file(file.key, obj_file)
                 Main.rebuild_it(file_path, filename)
-                Main.upload_to_minio(rebuild_path, filename)
-                #Main.upload_to_minio(file_path, filename)
+                #Main.upload_to_minio(rebuild_path, filename)
+                Main.upload_to_minio(file_path, filename)
                 file.delete()
                 # we only are intrested in processing the first file if it exists
                 break
