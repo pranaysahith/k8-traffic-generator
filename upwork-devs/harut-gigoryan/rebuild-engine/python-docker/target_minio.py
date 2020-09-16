@@ -34,7 +34,6 @@ TGT_SECRET_KEY = os.getenv('TARGET_MINIO_SECRET_KEY', 'minio2@123')
 TGT_BUCKET = os.getenv('TARGET_MINIO_BUCKET', 'dummy')
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
-UPLOAD_TO_TARGET = os.getenv('UPLOAD_TO_TARGET', 'TRUE')
 
 class Main():
 
@@ -49,20 +48,19 @@ class Main():
             s3 = boto3.resource('s3', endpoint_url=SRC_URL, aws_access_key_id=SRC_ACCESS_KEY,
                                 aws_secret_access_key=SRC_SECRET_KEY, config=Config(signature_version='s3v4'))
             logger.debug('Check if the Bucket {} exists'.format(SRC_BUCKET))
-            if (s3.Bucket(SRC_BUCKET) in s3.buckets.all()):
-                logger.debug('Bucket {} found. Starting to download files from it.'.format(SRC_BUCKET))
-                bucket = s3.Bucket(SRC_BUCKET)
-                for file in bucket.objects.all():
-                    path, filename = os.path.split(file.key)
-                    obj_file = file_path + filename
-                    logger.debug('Downloading file {}.'.format(filename))
-                    bucket.download_file(file.key, obj_file)
-                    if UPLOAD_TO_TARGET.upper() == 'TRUE':
-                        logger.debug('Calling function to upload the file {} to next minio.'.format(filename))
-                        Main.upload_to_minio(file_path, filename)
-                    file.delete()
-                    # we only are intrested in processing the first file if it exists
-                    break
+            if (s3.Bucket(SRC_BUCKET) in s3.buckets.all()) == False:
+                logger.info('Bucket {} not found.'.format(SRC_BUCKET))
+                return
+            bucket = s3.Bucket(SRC_BUCKET)
+            for file in bucket.objects.all():
+                path, filename = os.path.split(file.key)
+                obj_file = file_path + filename
+                logger.info('Downloading file {}.'.format(filename))
+                bucket.download_file(file.key, obj_file)
+                Main.upload_to_minio(file_path, filename)
+                file.delete()
+                # we only are intrested in processing the first file if it exists
+                break
 
         except ClientError as e:
             logger.error("Cannot Connect to the Minio {}. Please Verify your credentials.".format(URL))
@@ -91,18 +89,17 @@ class Main():
     def application():
         endpoint = '/minio/health/ready'
         logger.info('Checking if the Target Minio {} is avaliable.'.format(TGT_URL))
-        if UPLOAD_TO_TARGET.upper() == 'TRUE':
-            URL = TGT_URL + endpoint
-            try:
-                response = requests.get(URL, timeout=2)
-                if response.status_code == 200:
-                    logger.info('Recieved Response code {} from {}'.format(response.status_code, URL))
-                else:
-                    logger.error('Could Not connect to Target Minio {}.'.format(URL))
-                    exit(1)
-            except:
-                logger.error(
-                    'Could not connect to Target Minio {}.'.format(URL))
+        URL = TGT_URL + endpoint
+        try:
+            response = requests.get(URL, timeout=2)
+            if response.status_code == 200:
+                logger.info('Recieved Response code {} from {}'.format(response.status_code, URL))
+            else:
+                logger.error('Could Not connect to Target Minio {}.'.format(URL))
+                exit(1)
+        except:
+            logger.error(
+                'Could not connect to Target Minio {}.'.format(URL))
 
         URL = SRC_URL + endpoint
         logger.info('Checking if the Source Minio {} is avaliable.'.format(SRC_URL))

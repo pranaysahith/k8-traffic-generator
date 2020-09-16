@@ -18,8 +18,6 @@ spec:
         - name: python-script
           image: ggrig/k8-traffic:python
           env:
-            - name: IN_LOOP
-              value: "True"
             - name: SOURCE_MINIO_URL
               value: "http://input-queue:9000"
             - name: SOURCE_MINIO_ACCESS_KEY
@@ -28,9 +26,6 @@ spec:
               value: minio1@123
             - name: SOURCE_MINIO_BUCKET
               value: dummy
-            # Upload to the target Source
-            - name: UPLOAD_TO_TARGET
-              value: "true"
             # Source Minio Infromation
             - name: TARGET_MINIO_URL
               value: "http://output-queue:9000"
