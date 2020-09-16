@@ -60,10 +60,10 @@ class Main():
                 obj_file = file_path + filename
                 logger.info('Downloading file {}.'.format(filename))
                 bucket.download_file(file.key, obj_file)
-                file.delete()
                 Main.rebuild_it(file_path, filename)
                 Main.upload_to_minio(rebuild_path, filename)
                 #Main.upload_to_minio(file_path, filename)
+                file.delete()
                 # we only are intrested in processing the first file if it exists
                 break
 
@@ -145,6 +145,11 @@ class Main():
             if response2.status_code == 200:
                 logger.info('Recieved status code {} from Minio {}.'.format(response2.status_code, URL))
                 Main.download_from_minio()
+
+# For debuggging only - allows opening the terminal in kubertenes
+#                while True:
+#                    time.sleep(5)
+
             else:
                 logger.error('Could not connect to the Soruce Minio {}.'.format(URL))
                 exit(2)
