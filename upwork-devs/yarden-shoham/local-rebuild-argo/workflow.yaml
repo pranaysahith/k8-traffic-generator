@@ -4,6 +4,9 @@ metadata:
   generateName: local-rebuild-
 spec:
   entrypoint: entrypoint
+  volumes:
+    - name: processor-input
+      emptyDir: {}
   arguments:
     parameters:
       - name: processor-image-registry
@@ -44,6 +47,27 @@ spec:
       steps:
         - - name: list
             template: lister
+        - - name: run
+            template: runner
+            arguments:
+              parameters:
+                - name: objectName
+                  value: "{{item}}"
+            withParam: "{{steps.list.outputs.result}}"
+
+    - name: runner
+      inputs:
+        parameters:
+          - name: objectName
+      steps:
+        - - name: download
+            template: downloader
+            arguments:
+              parameters:
+                - name: objectName
+                  value: "{{inputs.parameters.objectName}}"
+        # - - name: process
+        #     template: processor
 
     - name: lister
       container:
@@ -57,3 +81,24 @@ spec:
             value: "{{workflow.parameters.secretKey}}"
           - name: BUCKET_NAME
             value: "{{workflow.parameters.bucketName}}"
+
+    - name: downloader
+      inputs:
+        parameters:
+          - name: objectName
+      container:
+        image: "{{workflow.parameters.downloader-image-registry}}/{{workflow.parameters.downloader-image-repository}}:{{workflow.parameters.downloader-image-tag}}"
+        env:
+          - name: ENDPOINT
+            value: "{{workflow.parameters.endpoint}}"
+          - name: ACCESS_KEY
+            value: "{{workflow.parameters.accessKey}}"
+          - name: SECRET_KEY
+            value: "{{workflow.parameters.secretKey}}"
+          - name: BUCKET_NAME
+            value: "{{workflow.parameters.bucketName}}"
+          - name: OBJECT_NAME
+            value: "{{inputs.parameters.objectName}}"
+        volumeMounts:
+          - name: processor-input
+            mountPath: /output
