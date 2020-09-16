@@ -1,0 +1,67 @@
+apiVersion: argoproj-io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: local-rebuild-
+spec:
+  entrypoint: dispatcher
+  arguments:
+    parameters:
+      - name: processor-image-registry
+        value: docker.io
+      - name: processor-image-repository
+        value: yardenshoham/glasswall-rebuild-eval
+      - name: processor-image-tag
+        value: process-mode-0
+      - name: downloader-image-registry
+        value: docker.io
+      - name: downloader-image-repository
+        value: yardenshoham/local-rebuild-downloader
+      - name: downloader-image-tag
+        value: latest
+      - name: dispatcher-image-registry
+        value: docker.io
+      - name: dispatcher-image-repository
+        value: yardenshoham/local-rebuild-dispatcher
+      - name: dispatcher-image-tag
+        value: latest
+      - name: endpoint
+        value: play.min.io
+      - name: accessKey
+        value: Q3AM3UQ867SPQQA43P2F
+      - name: secretKey
+        value: zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
+      - name: bucketName
+        value: 11214005-feab-4059-a5e9-e2004b2f09f4
+
+  templates:
+    - name: dispatcher
+      inputs:
+        parameters:
+          - name: processor-image-registry
+          - name: processor-image-repository
+          - name: processor-image-tag
+          - name: downloader-image-registry
+          - name: downloader-image-repository
+          - name: downloader-image-tag
+          - name: dispatcher-image-registry
+          - name: dispatcher-image-repository
+          - name: dispatcher-image-tag
+          - name: endpoint
+          - name: accessKey
+          - name: secretKey
+          - name: bucketName
+      container:
+        image: "{{inputs.parameters.dispatcher-image-registry}}/{{inputs.parameters.dispatcher-image-repository}}:{{inputs.parameters.dispatcher-image-tag}}"
+        env:
+          - name: PROCESSOR_IMAGE
+            value: "{{inputs.parameters.processor-image-registry}}/{{inputs.parameters.processor-image-repository}}:{{inputs.parameters.processor-image-tag}}"
+          - name: DOWNLOADER_IMAGE
+            value: "{{inputs.parameters.downloader-image-registry}}/{{inputs.parameters.downloader-image-repository}}:{{inputs.parameters.downloader-image-tag}}"
+          - name: ENDPOINT
+            value: "{{inputs.parameters.endpoint}}"
+          - name: ACCESS_KEY
+            value: "{{inputs.parameters.accessKey}}"
+          - name: SECRET_KEY
+            value: "{{inputs.parameters.secretKey}}"
+          - name: BUCKET_NAME
+            value: "{{inputs.parameters.bucketName}}"
