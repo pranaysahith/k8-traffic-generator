@@ -22,6 +22,7 @@ logging.config.fileConfig('logging.conf')
 logger = logging.getLogger(uuid.uuid1().urn)
 
 file_path = '/files/'
+rebuild_path = '/rebuild/'
 
 SRC_URL = os.getenv('SOURCE_MINIO_URL', 'http://192.168.99.119:31404')
 SRC_ACCESS_KEY = os.getenv('SOURCE_MINIO_ACCESS_KEY', 'minio1')
@@ -34,6 +35,9 @@ TGT_SECRET_KEY = os.getenv('TARGET_MINIO_SECRET_KEY', 'minio2@123')
 TGT_BUCKET = os.getenv('TARGET_MINIO_BUCKET', 'dummy')
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
+
+jwt_token = os.getenv("API_TOKEN","YOUR_REBUILD_API_TOKEN")
+url = os.getenv("API_URL","https://gzlhbtpvk2.execute-api.eu-west-1.amazonaws.com/Prod/api/rebuild/file")
 
 class Main():
 
@@ -57,7 +61,9 @@ class Main():
                 obj_file = file_path + filename
                 logger.info('Downloading file {}.'.format(filename))
                 bucket.download_file(file.key, obj_file)
-                Main.upload_to_minio(file_path, filename)
+                Main.rebuild_it(file_path, filename)
+                Main.upload_to_minio(rebuild_path, filename)
+                #Main.upload_to_minio(file_path, filename)
                 file.delete()
                 # we only are intrested in processing the first file if it exists
                 break
@@ -65,6 +71,38 @@ class Main():
         except ClientError as e:
             logger.error("Cannot Connect to the Minio {}. Please Verify your credentials.".format(URL))
         except Exception as e:
+            logger.error(e)
+
+    @staticmethod
+    def rebuild_it(file_path, filename):
+
+        try:
+            local_filename = file_path + filename
+            # Send a file to Glasswall's Rebuild API
+            with open(local_filename, "rb") as f:
+                response = requests.post(
+                    url=url,
+                    files=[("file", f)],
+                    headers={
+                        "Authorization": jwt_token,
+                        "accept": "application/octet-stream"
+                    }
+                )
+
+            output_file_path = rebuild_path + filename
+
+            if response.status_code == 200 and response.content:
+                # Glasswall has now sanitised and returned this file
+                # Write the sanitised file to output file path
+                with open(output_file_path, "wb") as f:
+                    f.write(response.content)
+                logger.info("Successfully wrote file to:", os.path.abspath(output_file_path))
+            else:
+                # An error occurred, raise it
+                logger.error("Rebuild Failed: {}", format(response.raise_for_status()))
+
+        except Exception as e:
+            logger.error("Rebuild Failed with Exception")
             logger.error(e)
 
     @staticmethod
@@ -120,6 +158,7 @@ class Main():
         time.sleep(5)
         if os.name == 'nt':
             file_path = 'C:/files/'
+            rebuild_path = 'C:/rebuild/'
         else:
             os.system('service filebeat start')
         Main.application()
