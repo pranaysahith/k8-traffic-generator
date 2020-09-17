@@ -8,11 +8,11 @@ COPY requirement.txt .
 
 RUN curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.9.1-amd64.deb
 
-RUN dpkg -i filebeat-7.9.1-amd64.deb
+#RUN dpkg -i filebeat-7.9.1-amd64.deb
 
-COPY filebeat.yml /etc/filebeat
+#COPY filebeat.yml /etc/filebeat
 
-RUN mkdir /files
+#RUN mkdir /files
 
 RUN mkdir /rebuild
 
