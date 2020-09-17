@@ -3,12 +3,14 @@ import logging
 import logging.config
 from pythonjsonlogger import jsonlogger
 from datetime import datetime;
-import boto3
+#import boto3
 import requests
 import time
 import uuid
-from botocore.client import Config
-from botocore.exceptions import ClientError
+#from botocore.client import Config
+#from botocore.exceptions import ClientError
+
+from kubernetes import client, config
 
 class ElkJsonFormatter(jsonlogger.JsonFormatter):
     def add_fields(self, log_record, record, message_dict):
@@ -19,9 +21,6 @@ class ElkJsonFormatter(jsonlogger.JsonFormatter):
 
 logging.config.fileConfig('logging.conf')
 logger = logging.getLogger(uuid.uuid1().urn)
-
-file_path = '/files/'
-rebuild_path = '/rebuild/'
 
 SRC_URL = os.getenv('SOURCE_MINIO_URL', 'http://192.168.99.120:30747')
 SRC_ACCESS_KEY = os.getenv('SOURCE_MINIO_ACCESS_KEY', 'test')
@@ -35,11 +34,6 @@ TGT_BUCKET = os.getenv('TARGET_MINIO_BUCKET', 'output')
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 
-jwt_token = os.getenv("API_TOKEN","YOUR_REBUILD_API_TOKEN")
-url = os.getenv("API_URL","https://gzlhbtpvk2.execute-api.eu-west-1.amazonaws.com/Prod/api/rebuild/file")
-
-SHELL_ACCESS = False
-
 class Main():
 
     @staticmethod
@@ -47,127 +41,64 @@ class Main():
         logging.basicConfig(level=getattr(logging, level))
 
     @staticmethod
-    def download_from_minio():
+    def run_processor():
+        job_name = uuid.uuid1().urn
 
-        try:
-            s3 = boto3.resource('s3', endpoint_url=SRC_URL, aws_access_key_id=SRC_ACCESS_KEY,
-                                aws_secret_access_key=SRC_SECRET_KEY, config=Config(signature_version='s3v4'))
-            logger.debug('Check if the Bucket {} exists'.format(SRC_BUCKET))
-            if (s3.Bucket(SRC_BUCKET) in s3.buckets.all()) == False:
-                logger.info('Bucket {} not found.'.format(SRC_BUCKET))
-                return
-            bucket = s3.Bucket(SRC_BUCKET)
-            for file in bucket.objects.all():
-                path, filename = os.path.split(file.key)
-                obj_file = file_path + filename
-                logger.info('Downloading file {}.'.format(filename))
-                bucket.download_file(file.key, obj_file)
-                Main.rebuild_it(file_path, filename)
-                Main.upload_to_minio(rebuild_path, filename)
-                #Main.upload_to_minio(file_path, filename)
-                file.delete()
-                # we only are intrested in processing the first file if it exists
-                break
+        envs = [client.V1EnvVar(name="API_TOKEN", value=os.getenv("API_TOKEN")), 
+                client.V1EnvVar(name="API_URL", value=os.getenv("API_URL")           
+                )]
 
-        except ClientError as e:
-            logger.error("Cannot Connect to the Minio {}. Please Verify your credentials.".format(URL))
-        except Exception as e:
-            logger.error(e)
+        processor_container = client.V1Container(
+            name="processor",
+            image=os.getenv("PROCESSOR_IMAGE"),
+            env=envs)
 
-    @staticmethod
-    def rebuild_it(file_path, filename):
+        pod_spec = client.V1PodSpec(
+            restart_policy="Never",
+            containers=[processor_container])
 
-        try:
-            local_filename = file_path + filename
-            # Send a file to Glasswall's Rebuild API
-            with open(local_filename, "rb") as f:
-                response = requests.post(
-                    url=url,
-                    files=[("file", f)],
-                    headers={
-                        "Authorization": jwt_token,
-                        "accept": "application/octet-stream"
-                    }
-                )
+        # Create and configure a spec section
+        template = client.V1PodTemplateSpec(
+            metadata=client.V1ObjectMeta(name=job_name, labels={
+                                        "app": "file-rebuild-processor"}),
+            spec=pod_spec)
 
-            output_file_path = rebuild_path + filename
+        # Create the specification of the job
+        spec = client.V1JobSpec(
+            template=template,
+            backoff_limit=0)
 
-            if response.status_code == 200 and response.content:
-                # Glasswall has now sanitised and returned this file
-                # Write the sanitised file to output file path
-                with open(output_file_path, "wb") as f:
-                    f.write(response.content)
-                logger.info("The file has been successfully rebuild")
-            else:
-                # An error occurred, raise it
-                logger.error("Rebuild Failed: {}", format(response.raise_for_status()))
+        # Instantiate the job object
+        job = client.V1Job(
+            api_version="batch/v1",
+            kind="Job",
+            metadata=client.V1ObjectMeta(name=job_name),
+            spec=spec)
 
-        except Exception as e:
-            logger.error("Rebuild Failed with Exception")
-            logger.error(e)
+        client.BatchV1Api().create_namespaced_job(
+            body=job,
+            namespace="default")
 
-    @staticmethod
-    def upload_to_minio(file_path, filename):
-
-        try:
-            s3 = boto3.resource('s3', endpoint_url=TGT_URL, aws_access_key_id=TGT_ACCESS_KEY,
-                                aws_secret_access_key=TGT_SECRET_KEY, config=Config(signature_version='s3v4'))
-            logger.debug('Checking if the Bucket to upload files exists or not.')
-            if (s3.Bucket(TGT_BUCKET) in s3.buckets.all()) == False:
-                logger.info('Bucket not Found. Creating Bucket.')
-                s3.create_bucket(Bucket=TGT_BUCKET)
-            logger.debug('Uploading file to bucket {} minio {}'.format(TGT_BUCKET, TGT_URL))
-            file_to_upload = file_path + filename
-            s3.Bucket(TGT_BUCKET).upload_file(file_to_upload, filename)
-        except ClientError as e:
-            logger.error("Cannot connect to the minio {}. Please vefify the Credentials.".format(TGT_URL))
-        except Exception as e:
-            logger.info(e)
+        while client.V1Job.status.active > 0:
+            time.sleep(5)
+            logger.info("Waiting for the job to complete");
+            
+        return
 
     @staticmethod
     def application():
-        endpoint = '/minio/health/ready'
-        logger.info('Checking if the Target Minio {} is avaliable.'.format(TGT_URL))
-        URL = TGT_URL + endpoint
-        try:
-            response = requests.get(URL, timeout=2)
-            if response.status_code == 200:
-                logger.info('Recieved Response code {} from {}'.format(response.status_code, URL))
-            else:
-                logger.error('Could Not connect to Target Minio {}.'.format(URL))
-                exit(1)
-        except:
-            logger.error(
-                'Could not connect to Target Minio {}.'.format(URL))
-
-        URL = SRC_URL + endpoint
-        logger.info('Checking if the Source Minio {} is avaliable.'.format(SRC_URL))
-        try:
-            response2 = requests.get(URL, timeout=2)
-            if response2.status_code == 200:
-                logger.info('Recieved status code {} from Minio {}.'.format(response2.status_code, URL))
-                Main.download_from_minio()
-
-            else:
-                logger.error('Could not connect to the Soruce Minio {}.'.format(URL))
-                exit(2)
-        except:
-            logger.error('Could not connect to Minio {}'.format(URL))
+        while True:
+            try:
+                Main.run_processor()
+            except Exception as e:
+                logger.error(e)
 
     @staticmethod
     def main():
         Main.log_level(LOG_LEVEL)
-        #time.sleep(5)
-        if os.name == 'nt':
-            file_path = 'C:/files/'
-            rebuild_path = 'C:/rebuild/'
-        else:
+        if os.name != 'nt':
             os.system('service filebeat start')
         Main.application()
-        if SHELL_ACCESS:
-            while True:
-                time.sleep(5)
-
 
 if __name__ == "__main__":
     Main.main()

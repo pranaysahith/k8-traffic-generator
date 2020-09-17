@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: python-script
-          image: ggrig/k8-traffic:re_processor
+          image: ggrig/k8-traffic:re_inspector
           env:
             - name: SOURCE_MINIO_URL
               value: "http://input-queue:9000"
@@ -40,3 +40,7 @@ spec:
               value: info
             - name: API_TOKEN
               value: YOUR_REBUILD_API_TOKEN
+            - name: API_URL
+              value: "https://gzlhbtpvk2.execute-api.eu-west-1.amazonaws.com/Prod/api/rebuild/file"
+            - name: PROCESSOR_IMAGE
+              value: "ggrig/k8-traffic:re_processor"

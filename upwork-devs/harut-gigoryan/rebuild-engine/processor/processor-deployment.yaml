@@ -40,3 +40,6 @@ spec:
               value: info
             - name: API_TOKEN
               value: YOUR_REBUILD_API_TOKEN
+            - name: API_URL
+              value: "https://gzlhbtpvk2.execute-api.eu-west-1.amazonaws.com/Prod/api/rebuild/file"
+                      
