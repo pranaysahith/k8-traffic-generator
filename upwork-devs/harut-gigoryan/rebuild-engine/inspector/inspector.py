@@ -3,36 +3,114 @@ import logging
 import logging.config
 from pythonjsonlogger import jsonlogger
 from datetime import datetime;
-#import boto3
 import requests
 import time
 import uuid
-#from botocore.client import Config
-#from botocore.exceptions import ClientError
 
-from kubernetes import client, config
+from kubernetes import client, config, utils
+import kubernetes.client
+from kubernetes.client.rest import ApiException
 
 class ElkJsonFormatter(jsonlogger.JsonFormatter):
     def add_fields(self, log_record, record, message_dict):
         super(ElkJsonFormatter, self).add_fields(log_record, record, message_dict)
-#        log_record['@timestamp'] = datetime.now().isoformat()
+        log_record['@timestamp'] = datetime.now().isoformat()
         log_record['level'] = record.levelname
         log_record['logger'] = record.name
 
 logging.config.fileConfig('logging.conf')
 logger = logging.getLogger(uuid.uuid1().urn)
 
-SRC_URL = os.getenv('SOURCE_MINIO_URL', 'http://192.168.99.120:30747')
-SRC_ACCESS_KEY = os.getenv('SOURCE_MINIO_ACCESS_KEY', 'test')
-SRC_SECRET_KEY = os.getenv('SOURCE_MINIO_SECRET_KEY', 'test@123')
-SRC_BUCKET = os.getenv('SOURCE_MINIO_BUCKET', 'input')
-
-TGT_URL = os.getenv('TARGET_MINIO_URL', 'http://192.168.99.120:31555')
-TGT_ACCESS_KEY = os.getenv('TARGET_MINIO_ACCESS_KEY', 'test')
-TGT_SECRET_KEY = os.getenv('TARGET_MINIO_SECRET_KEY', 'test@123')
-TGT_BUCKET = os.getenv('TARGET_MINIO_BUCKET', 'output')
-
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
+FILE_PROCESSOR = "file-processor"
+
+# Setup K8 configs
+config.load_kube_config()
+configuration = kubernetes.client.Configuration()
+api_instance = kubernetes.client.BatchV1Api(kubernetes.client.ApiClient(configuration))
+
+def kube_delete_empty_pods(namespace='default', phase='Succeeded'):
+    """
+    Pods are never empty, just completed the lifecycle.
+    As such they can be deleted.
+    Pods can be without any running container in 2 states:
+    Succeeded and Failed. This call doesn't terminate Failed pods by default.
+    """
+    # The always needed object
+    deleteoptions = client.V1DeleteOptions()
+    # We need the api entry point for pods
+    api_pods = client.CoreV1Api()
+    # List the pods
+    try:
+        pods = api_pods.list_namespaced_pod(namespace)
+    except ApiException as e:
+        logging.error("Exception when calling CoreV1Api->list_namespaced_pod: %s\n" % e)
+
+    for pod in pods.items:
+        logging.debug(pod)
+        podname = pod.metadata.name
+        try:
+            if pod.status.phase == phase:
+                api_response = api_pods.delete_namespaced_pod(podname, namespace, body={})
+                logging.info("Pod: {} deleted!".format(podname))
+                logging.debug(api_response)
+            else:
+                logging.info("Pod: {} still not done... Phase: {}".format(podname, pod.status.phase))
+        except ApiException as e:
+            logging.error("Exception when calling CoreV1Api->delete_namespaced_pod: %s\n" % e)
+    
+    return
+
+def kube_cleanup_finished_jobs(namespace='default', state='Finished'):
+    """
+    Since the TTL flag (ttl_seconds_after_finished) is still in alpha (Kubernetes 1.12) jobs need to be cleanup manually
+    As such this method checks for existing Finished Jobs and deletes them.
+    By default it only cleans Finished jobs. Failed jobs require manual intervention or a second call to this function.
+    Docs: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/#clean-up-finished-jobs-automatically
+    For deletion you need a new object type! V1DeleteOptions! But you can have it empty!
+    CAUTION: Pods are not deleted at the moment. They are set to not running, but will count for your autoscaling limit, so if
+             pods are not deleted, the cluster can hit the autoscaling limit even with free, idling pods.
+             To delete pods, at this moment the best choice is to use the kubectl tool
+             ex: kubectl delete jobs/JOBNAME.
+             But! If you already deleted the job via this API call, you now need to delete the Pod using Kubectl:
+             ex: kubectl delete pods/PODNAME
+    """
+    deleteoptions = client.V1DeleteOptions()
+    try: 
+        jobs = api_instance.list_namespaced_job(namespace)
+        #print(jobs)
+    except ApiException as e:
+        print("Exception when calling BatchV1Api->list_namespaced_job: %s\n" % e)
+    
+    # Now we have all the jobs, lets clean up
+    # We are also logging the jobs we didn't clean up because they either failed or are still running
+    for job in jobs.items:
+        logging.debug(job)
+        jobname = job.metadata.name
+        jobstatus = job.status.conditions
+        if not jobname.startswith(FILE_PROCESSOR):
+            continue
+        if job.status.succeeded == 1:
+            # Clean up Job
+            logging.info("Cleaning up Job: {}. Finished at: {}".format(jobname, job.status.completion_time))
+            try: 
+                # What is at work here. Setting Grace Period to 0 means delete ASAP. Otherwise it defaults to
+                # some value I can't find anywhere. Propagation policy makes the Garbage cleaning Async
+                api_response = api_instance.delete_namespaced_job(jobname,
+                                                                  namespace)
+                logging.debug(api_response)
+            except ApiException as e:
+                print("Exception when calling BatchV1Api->delete_namespaced_job: %s\n" % e)
+        else:
+            if jobstatus is None and job.status.active == 1:
+                jobstatus = 'active'
+            logging.info("Job: {} not cleaned up. Current status: {}".format(jobname, jobstatus))
+    
+    # Now that we have the jobs cleaned, let's clean the pods
+    kube_delete_empty_pods(namespace)
+    # And we are done!
+    return
+
 
 class Main():
 
@@ -42,15 +120,16 @@ class Main():
 
     @staticmethod
     def run_processor():
-        job_name = uuid.uuid1().urn
+        kube_cleanup_finished_jobs()
 
-        envs = [client.V1EnvVar(name="API_TOKEN", value=os.getenv("API_TOKEN")), 
-                client.V1EnvVar(name="API_URL", value=os.getenv("API_URL")           
-                )]
+        job_name = FILE_PROCESSOR
+
+        envs = [client.V1EnvVar(name="API_TOKEN", value=os.getenv("API_TOKEN"))      
+               ]
 
         processor_container = client.V1Container(
             name="processor",
-            image=os.getenv("PROCESSOR_IMAGE"),
+            image=os.getenv("PROCESSOR_IMAGE", "ggrig/k8-traffic:re_processor"),
             env=envs)
 
         pod_spec = client.V1PodSpec(
@@ -75,19 +154,23 @@ class Main():
             metadata=client.V1ObjectMeta(name=job_name),
             spec=spec)
 
+        logger.info("trying to create a job:" + job_name)
         client.BatchV1Api().create_namespaced_job(
             body=job,
             namespace="default")
 
-        while client.V1Job.status.active > 0:
+        print (client.V1Job.status) 
+        while False: #client.V1Job.status.active > 0:
             time.sleep(5)
-            logger.info("Waiting for the job to complete");
-            
-        return
+            print("Waiting for the job to complete")
+            #logger.info("Waiting for the job to complete");
 
     @staticmethod
     def application():
-        while True:
+
+        Main.run_processor()
+        
+        while False: #True:
             try:
                 Main.run_processor()
             except Exception as e:
