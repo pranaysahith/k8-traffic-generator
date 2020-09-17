@@ -145,10 +145,11 @@ class Main():
 
     @staticmethod
     def run_processor():
-        kube_cleanup_finished_jobs()
 
         while kube_processor_jobs_running():
             logger.debug("Previous job still running")
+            kube_cleanup_finished_jobs()
+            time.sleep(1)
 
         job_name = FILE_PROCESSOR
 
@@ -189,20 +190,19 @@ class Main():
     @staticmethod
     def application():
 
-        Main.run_processor()
+        #Main.run_processor()
      
-        while False:
+        while True:
             try:
                 Main.run_processor()
             except Exception as e:
                 logger.error(e)
-            time.sleep(0.1)
 
     @staticmethod
     def main():
         Main.log_level(LOG_LEVEL)
-        if os.name != 'nt':
-            os.system('service filebeat start')
+        #if os.name != 'nt':
+        #    os.system('service filebeat start')
         Main.application()
 
 if __name__ == "__main__":
