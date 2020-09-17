@@ -14,4 +14,5 @@ if __name__ == "__main__":
     objects = s3client.list_objects(
         bucket_name=bucket_name, recursive=True)
 
-    json.dump([object.object_name for object in objects], sys.stdout)
+    json.dump([object.object_name for object in objects],
+              sys.stdout, ensure_ascii=False)
