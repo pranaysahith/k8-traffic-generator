@@ -37,7 +37,7 @@ def kube_delete_empty_pods(namespace='default', phase='Succeeded'):
     Succeeded and Failed. This call doesn't terminate Failed pods by default.
     """
     # The always needed object
-    deleteoptions = client.V1DeleteOptions()
+    #deleteoptions = client.V1DeleteOptions()
     # We need the api entry point for pods
     api_pods = client.CoreV1Api()
     # List the pods
@@ -45,10 +45,13 @@ def kube_delete_empty_pods(namespace='default', phase='Succeeded'):
         pods = api_pods.list_namespaced_pod(namespace)
     except ApiException as e:
         logging.error("Exception when calling CoreV1Api->list_namespaced_pod: %s\n" % e)
+        return
 
     for pod in pods.items:
         logging.debug(pod)
         podname = pod.metadata.name
+        if not podname.startswith(FILE_PROCESSOR):
+            continue 
         try:
             if pod.status.phase == phase:
                 api_response = api_pods.delete_namespaced_pod(podname, namespace, body={})
@@ -62,6 +65,7 @@ def kube_delete_empty_pods(namespace='default', phase='Succeeded'):
     return
 
 def kube_cleanup_finished_jobs(namespace='default', state='Finished'):
+  
     """
     Since the TTL flag (ttl_seconds_after_finished) is still in alpha (Kubernetes 1.12) jobs need to be cleanup manually
     As such this method checks for existing Finished Jobs and deletes them.
@@ -75,12 +79,13 @@ def kube_cleanup_finished_jobs(namespace='default', state='Finished'):
              But! If you already deleted the job via this API call, you now need to delete the Pod using Kubectl:
              ex: kubectl delete pods/PODNAME
     """
-    deleteoptions = client.V1DeleteOptions()
+    #deleteoptions = client.V1DeleteOptions()
     try: 
         jobs = api_instance.list_namespaced_job(namespace)
         #print(jobs)
     except ApiException as e:
         print("Exception when calling BatchV1Api->list_namespaced_job: %s\n" % e)
+        return
     
     # Now we have all the jobs, lets clean up
     # We are also logging the jobs we didn't clean up because they either failed or are still running
@@ -111,6 +116,26 @@ def kube_cleanup_finished_jobs(namespace='default', state='Finished'):
     # And we are done!
     return
 
+def kube_processor_jobs_running(namespace='default', state='Finished'):
+  
+    try: 
+        jobs = api_instance.list_namespaced_job(namespace)
+        #print(jobs)
+    except ApiException as e:
+        print("Exception when calling BatchV1Api->list_namespaced_job: %s\n" % e)
+        return True
+    
+    # Now we have all the jobs, lets clean up
+    # We are also logging the jobs we didn't clean up because they either failed or are still running
+    for job in jobs.items:
+        logging.debug(job)
+        jobname = job.metadata.name
+        jobstatus = job.status.conditions
+        if jobname.startswith(FILE_PROCESSOR):
+            return True
+    
+    return False
+
 
 class Main():
 
@@ -122,10 +147,12 @@ class Main():
     def run_processor():
         kube_cleanup_finished_jobs()
 
+        while kube_processor_jobs_running():
+            logger.debug("Previous job still running")
+
         job_name = FILE_PROCESSOR
 
-        envs = [client.V1EnvVar(name="API_TOKEN", value=os.getenv("API_TOKEN"))      
-               ]
+        envs = [client.V1EnvVar(name="API_TOKEN", value=os.getenv("API_TOKEN"))]
 
         processor_container = client.V1Container(
             name="processor",
@@ -159,22 +186,17 @@ class Main():
             body=job,
             namespace="default")
 
-        print (client.V1Job.status) 
-        while False: #client.V1Job.status.active > 0:
-            time.sleep(5)
-            print("Waiting for the job to complete")
-            #logger.info("Waiting for the job to complete");
-
     @staticmethod
     def application():
 
         Main.run_processor()
-        
-        while False: #True:
+     
+        while False:
             try:
                 Main.run_processor()
             except Exception as e:
                 logger.error(e)
+            time.sleep(0.1)
 
     @staticmethod
     def main():
