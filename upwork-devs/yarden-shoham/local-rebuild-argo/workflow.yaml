@@ -21,12 +21,6 @@ spec:
         value: yardenshoham/local-rebuild-downloader
       - name: downloader-image-tag
         value: latest
-      - name: dispatcher-image-registry
-        value: docker.io
-      - name: dispatcher-image-repository
-        value: yardenshoham/local-rebuild-dispatcher
-      - name: dispatcher-image-tag
-        value: latest
       - name: lister-image-registry
         value: docker.io
       - name: lister-image-repository
