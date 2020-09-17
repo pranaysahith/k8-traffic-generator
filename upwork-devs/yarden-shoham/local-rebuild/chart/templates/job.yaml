@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: local-rebuild-dispatcher
+  labels:
+    app: local-rebuild-dispatcher
+spec:
+  template:
+    metadata:
+      name: local-rebuild-dispatcher
+      labels:
+        app: local-rebuild-dispatcher
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: local-rebuild-dispatcher
+          image: {{ .Values.dispatcher.image.registry }}/{{ .Values.dispatcher.image.repository }}:{{ .Values.dispatcher.image.tag }}
+          env:
+            - name: PROCESSOR_IMAGE
+              value: {{ .Values.processor.image.registry }}/{{ .Values.processor.image.repository }}:{{ .Values.processor.image.tag }}
+            - name: DOWNLOADER_IMAGE
+              value: {{ .Values.downloader.image.registry }}/{{ .Values.downloader.image.repository }}:{{ .Values.downloader.image.tag }}
+            - name: ENDPOINT
+              value: {{ quote .Values.endpoint }}
+            - name: ACCESS_KEY
+              value: {{ quote .Values.accessKey }}
+            - name: SECRET_KEY
+              value: {{ quote .Values.secretKey }}
+            - name: BUCKET_NAME
+              value: {{ quote .Values.bucketName }}
