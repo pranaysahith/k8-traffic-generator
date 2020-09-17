@@ -190,7 +190,9 @@ class Main():
     @staticmethod
     def application():
 
+        # No Loop debug run
         #Main.run_processor()
+        #return
      
         while True:
             try:
@@ -201,8 +203,6 @@ class Main():
     @staticmethod
     def main():
         Main.log_level(LOG_LEVEL)
-        #if os.name != 'nt':
-        #    os.system('service filebeat start')
         Main.application()
 
 if __name__ == "__main__":
