@@ -21,9 +21,9 @@ spec:
         - /data
         env:
         - name: MINIO_ACCESS_KEY
-          value: "minio1"
+          value: "test"
         - name: MINIO_SECRET_KEY
-          value: "minio1@123"
+          value: "test@123"
         ports:
         - containerPort: 9000
 
@@ -51,9 +51,9 @@ spec:
         - /data
         env:
         - name: MINIO_ACCESS_KEY
-          value: "minio2"
+          value: "test"
         - name: MINIO_SECRET_KEY
-          value: "minio2@123"
+          value: "test@123"
         ports:
         - containerPort: 9000
 

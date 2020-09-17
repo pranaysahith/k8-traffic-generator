@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: worker
+  name: inspector
   labels:
     app: python-minio
 spec:
@@ -21,20 +21,20 @@ spec:
             - name: SOURCE_MINIO_URL
               value: "http://input-queue:9000"
             - name: SOURCE_MINIO_ACCESS_KEY
-              value: minio1
+              value: test
             - name: SOURCE_MINIO_SECRET_KEY
-              value: minio1@123
+              value: test@123
             - name: SOURCE_MINIO_BUCKET
-              value: dummy
+              value: input
             # Source Minio Infromation
             - name: TARGET_MINIO_URL
               value: "http://output-queue:9000"
             - name: TARGET_MINIO_ACCESS_KEY
-              value: minio2
+              value: test
             - name: TARGET_MINIO_SECRET_KEY
-              value: minio2@123
+              value: test@123
             - name: TARGET_MINIO_BUCKET
-              value: dummy
+              value: output
             # Log Level (Default to Info)
             - name: LOG_LEVEL
               value: info

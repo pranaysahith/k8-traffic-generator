@@ -23,20 +23,22 @@ logger = logging.getLogger(uuid.uuid1().urn)
 file_path = '/files/'
 rebuild_path = '/rebuild/'
 
-SRC_URL = os.getenv('SOURCE_MINIO_URL', 'http://192.168.99.119:31404')
-SRC_ACCESS_KEY = os.getenv('SOURCE_MINIO_ACCESS_KEY', 'minio1')
-SRC_SECRET_KEY = os.getenv('SOURCE_MINIO_SECRET_KEY', 'minio1@123')
-SRC_BUCKET = os.getenv('SOURCE_MINIO_BUCKET', 'dummy')
+SRC_URL = os.getenv('SOURCE_MINIO_URL', 'http://192.168.99.120:30747')
+SRC_ACCESS_KEY = os.getenv('SOURCE_MINIO_ACCESS_KEY', 'test')
+SRC_SECRET_KEY = os.getenv('SOURCE_MINIO_SECRET_KEY', 'test@123')
+SRC_BUCKET = os.getenv('SOURCE_MINIO_BUCKET', 'input')
 
-TGT_URL = os.getenv('TARGET_MINIO_URL', 'http://192.168.99.119:31994')
-TGT_ACCESS_KEY = os.getenv('TARGET_MINIO_ACCESS_KEY', 'minio2')
-TGT_SECRET_KEY = os.getenv('TARGET_MINIO_SECRET_KEY', 'minio2@123')
-TGT_BUCKET = os.getenv('TARGET_MINIO_BUCKET', 'dummy')
+TGT_URL = os.getenv('TARGET_MINIO_URL', 'http://192.168.99.120:31555')
+TGT_ACCESS_KEY = os.getenv('TARGET_MINIO_ACCESS_KEY', 'test')
+TGT_SECRET_KEY = os.getenv('TARGET_MINIO_SECRET_KEY', 'test@123')
+TGT_BUCKET = os.getenv('TARGET_MINIO_BUCKET', 'output')
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 
 jwt_token = os.getenv("API_TOKEN","YOUR_REBUILD_API_TOKEN")
 url = os.getenv("API_URL","https://gzlhbtpvk2.execute-api.eu-west-1.amazonaws.com/Prod/api/rebuild/file")
+
+SHELL_ACCESS = False
 
 class Main():
 
@@ -146,10 +148,6 @@ class Main():
                 logger.info('Recieved status code {} from Minio {}.'.format(response2.status_code, URL))
                 Main.download_from_minio()
 
-# For debuggging only - allows opening the terminal in kubertenes
-#                while True:
-#                    time.sleep(5)
-
             else:
                 logger.error('Could not connect to the Soruce Minio {}.'.format(URL))
                 exit(2)
@@ -159,13 +157,16 @@ class Main():
     @staticmethod
     def main():
         Main.log_level(LOG_LEVEL)
-        time.sleep(5)
+        #time.sleep(5)
         if os.name == 'nt':
             file_path = 'C:/files/'
             rebuild_path = 'C:/rebuild/'
         else:
             os.system('service filebeat start')
         Main.application()
+        if SHELL_ACCESS:
+            while True:
+                time.sleep(5)
 
 
 if __name__ == "__main__":

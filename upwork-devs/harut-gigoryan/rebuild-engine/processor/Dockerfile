@@ -18,8 +18,8 @@ RUN mkdir /rebuild
 
 RUN pip install -r requirement.txt --user
 
-COPY target_minio.py .
+COPY processor.py .
 
 COPY logging.conf .
 
-CMD ["python", "target_minio.py"]
+CMD ["python", "processor.py"]
