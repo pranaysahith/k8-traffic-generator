@@ -6,7 +6,6 @@ from datetime import datetime;
 import boto3
 import requests
 import time
-import uuid
 from botocore.client import Config
 from botocore.exceptions import ClientError
 
@@ -18,7 +17,7 @@ class ElkJsonFormatter(jsonlogger.JsonFormatter):
         log_record['logger'] = record.name
 
 logging.config.fileConfig('logging.conf')
-logger = logging.getLogger(uuid.uuid1().urn)
+logger = logging.getLogger('file processor')
 
 file_path = '/files/'
 rebuild_path = '/rebuild/'
@@ -76,8 +75,9 @@ class Main():
 
     @staticmethod
     def rebuild_it(file_path, filename):
-
         try:
+            logger.info('Rebuilding file {}.'.format(filename))
+
             local_filename = file_path + filename
             # Send a file to Glasswall's Rebuild API
             with open(local_filename, "rb") as f:
@@ -95,9 +95,9 @@ class Main():
             if response.status_code == 200 and response.content:
                 # Glasswall has now sanitised and returned this file
                 # Write the sanitised file to output file path
+                logger.info("The file has been successfully rebuild")
                 with open(output_file_path, "wb") as f:
                     f.write(response.content)
-                logger.info("The file has been successfully rebuild")
             else:
                 # An error occurred, raise it
                 logger.error("Rebuild Failed: {}", format(response.raise_for_status()))
@@ -110,6 +110,8 @@ class Main():
     def upload_to_minio(file_path, filename):
 
         try:
+            logger.info('Uploading file {}.'.format(filename))
+
             s3 = boto3.resource('s3', endpoint_url=TGT_URL, aws_access_key_id=TGT_ACCESS_KEY,
                                 aws_secret_access_key=TGT_SECRET_KEY, config=Config(signature_version='s3v4'))
             logger.debug('Checking if the Bucket to upload files exists or not.')
@@ -127,12 +129,12 @@ class Main():
     @staticmethod
     def application():
         endpoint = '/minio/health/ready'
-        logger.info('Checking if the Target Minio {} is avaliable.'.format(TGT_URL))
+        logger.debug('Checking if the Target Minio {} is avaliable.'.format(TGT_URL))
         URL = TGT_URL + endpoint
         try:
             response = requests.get(URL, timeout=2)
             if response.status_code == 200:
-                logger.info('Recieved Response code {} from {}'.format(response.status_code, URL))
+                logger.debug('Recieved Response code {} from {}'.format(response.status_code, URL))
             else:
                 logger.error('Could Not connect to Target Minio {}.'.format(URL))
                 exit(1)
@@ -141,11 +143,11 @@ class Main():
                 'Could not connect to Target Minio {}.'.format(URL))
 
         URL = SRC_URL + endpoint
-        logger.info('Checking if the Source Minio {} is avaliable.'.format(SRC_URL))
+        logger.debug('Checking if the Source Minio {} is avaliable.'.format(SRC_URL))
         try:
             response2 = requests.get(URL, timeout=2)
             if response2.status_code == 200:
-                logger.info('Recieved status code {} from Minio {}.'.format(response2.status_code, URL))
+                logger.debug('Recieved status code {} from Minio {}.'.format(response2.status_code, URL))
                 Main.download_from_minio()
 
             else:

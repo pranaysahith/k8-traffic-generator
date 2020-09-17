@@ -5,7 +5,6 @@ from pythonjsonlogger import jsonlogger
 from datetime import datetime;
 import requests
 import time
-import uuid
 
 from kubernetes import client, config, utils
 import kubernetes.client
@@ -19,7 +18,7 @@ class ElkJsonFormatter(jsonlogger.JsonFormatter):
         log_record['logger'] = record.name
 
 logging.config.fileConfig('logging.conf')
-logger = logging.getLogger(uuid.uuid1().urn)
+logger = logging.getLogger('inspector')
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 FILE_PROCESSOR = "file-processor"
