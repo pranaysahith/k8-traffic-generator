@@ -166,9 +166,12 @@ class Main():
         else:
             os.system('service filebeat start')
         Main.application()
-        if SHELL_ACCESS:
-            while True:
-                time.sleep(5)
+        # let filebeat do his job
+        time.sleep(2)
+
+        #if SHELL_ACCESS:
+        #    while True:
+        #        time.sleep(5)
 
 
 if __name__ == "__main__":
