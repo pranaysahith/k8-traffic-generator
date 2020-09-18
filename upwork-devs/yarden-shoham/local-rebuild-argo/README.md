@@ -1,5 +1,7 @@
 # Local Rebuild Using Argo
 
+This workflow gets an S3 input as an input and spins up a pod to run each file in the S3 bucket through the Rebuild engine.
+
 ## Quick Start
 
 Install argo with artifacts.
