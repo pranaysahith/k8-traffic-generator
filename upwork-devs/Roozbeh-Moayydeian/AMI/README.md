@@ -25,6 +25,9 @@ _____
 ## 2. Install pre requirements
 
 ```
+# ssh into your EC2 instance
+ssh ec2-user@EC2_IP
+
 sudo apt install docker.io -y
 sudo systemctl start docker
 sudo systemctl enable docker
@@ -105,6 +108,8 @@ _____
 ## 2. Install pre requirements and service (JMeter in this case)
 
 ```
+# ssh into your EC2 instance
+ssh ec2-user@EC2_IP
 #Prepare environment
 sudo apt-get update
 sudo apt-get install -y openjdk-7-jdk
