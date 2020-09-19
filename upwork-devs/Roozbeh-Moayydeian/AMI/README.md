@@ -15,7 +15,7 @@ EKS souuports ASG (Auto Scaling Groups) to provide auto scale in workers level b
 _____
 
 
-## 1. First Create and 2 EC2 Instances (one master and one worker)
+## 1. First Create 2 EC2 Instances (one master and one worker)
 
 Full doc on: https://docs.aws.amazon.com/efs/latest/ug/gs-step-one-create-ec2-resources.html
 
@@ -95,7 +95,7 @@ _____
 
 # How to create AMI (Amazon Machine Image) for traffic-generator and other services (ex: JMeter)
 
-## 1. First Create and an EC2 Instances
+## 1. First Create an EC2 Instance
 
 Full doc on: https://docs.aws.amazon.com/efs/latest/ug/gs-step-one-create-ec2-resources.html
 
