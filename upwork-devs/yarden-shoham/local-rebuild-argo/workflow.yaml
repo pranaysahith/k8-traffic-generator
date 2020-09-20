@@ -4,9 +4,6 @@ metadata:
   generateName: local-rebuild-
 spec:
   entrypoint: entrypoint
-  volumes:
-    - name: processor-input
-      emptyDir: {}
   arguments:
     parameters:
       - name: processor-image-registry
