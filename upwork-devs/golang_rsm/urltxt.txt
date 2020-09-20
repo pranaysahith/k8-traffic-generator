@@ -1,0 +1,4 @@
+google.png,https://www.google.com,browser
+golang.html,https://www.golang.org,request
+yahoo.png,https://www.yahoo.com,browser
+example.html,https://www.example.com,request
