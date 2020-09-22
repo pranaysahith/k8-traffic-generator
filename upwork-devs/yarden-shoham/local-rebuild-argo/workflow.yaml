@@ -6,30 +6,8 @@ spec:
   entrypoint: entrypoint
   arguments:
     parameters:
-      - name: processor-image-registry
+      - name: imageRegistry
         value: docker.io
-      - name: processor-image-repository
-        value: yardenshoham/glasswall-rebuild-eval
-      - name: processor-image-tag
-        value: process-mode-0
-      - name: convertor-image-registry
-        value: docker.io
-      - name: convertor-image-repository
-        value: alpine/xml
-      - name: convertor-image-tag
-        value: latest
-      - name: downloader-image-registry
-        value: docker.io
-      - name: downloader-image-repository
-        value: yardenshoham/local-rebuild-downloader
-      - name: downloader-image-tag
-        value: latest
-      - name: lister-image-registry
-        value: docker.io
-      - name: lister-image-repository
-        value: yardenshoham/local-rebuild-argo-lister
-      - name: lister-image-tag
-        value: latest
       - name: endpoint
         value: play.min.io
       - name: accessKey
@@ -78,7 +56,7 @@ spec:
 
     - name: lister
       container:
-        image: "{{workflow.parameters.lister-image-registry}}/{{workflow.parameters.lister-image-repository}}:{{workflow.parameters.lister-image-tag}}"
+        image: "{{workflow.parameters.imageRegistry}}/yardenshoham/local-rebuild-argo-lister"
         env:
           - name: ENDPOINT
             value: "{{workflow.parameters.endpoint}}"
@@ -94,7 +72,7 @@ spec:
         parameters:
           - name: objectName
       container:
-        image: "{{workflow.parameters.downloader-image-registry}}/{{workflow.parameters.downloader-image-repository}}:{{workflow.parameters.downloader-image-tag}}"
+        image: "{{workflow.parameters.imageRegistry}}/yardenshoham/local-rebuild-downloader"
         env:
           - name: ENDPOINT
             value: "{{workflow.parameters.endpoint}}"
@@ -117,7 +95,7 @@ spec:
           - name: processor-input
             path: /input/
       container:
-        image: "{{workflow.parameters.processor-image-registry}}/{{workflow.parameters.processor-image-repository}}:{{workflow.parameters.processor-image-tag}}"
+        image: "{{workflow.parameters.imageRegistry}}/yardenshoham/glasswall-rebuild-eval:process-mode-0"
       outputs:
         artifacts:
           - name: xml-report
@@ -129,7 +107,7 @@ spec:
           - name: xml-report
             path: /input/
       container:
-        image: "{{workflow.parameters.convertor-image-registry}}/{{workflow.parameters.convertor-image-repository}}:{{workflow.parameters.convertor-image-tag}}"
+        image: "{{workflow.parameters.imageRegistry}}/alpine/xml"
         workingDir: /input
         command:
           - sh
