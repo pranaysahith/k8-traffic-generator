@@ -12,6 +12,12 @@ spec:
         value: yardenshoham/glasswall-rebuild-eval
       - name: processor-image-tag
         value: process-mode-0
+      - name: convertor-image-registry
+        value: docker.io
+      - name: convertor-image-repository
+        value: alpine/xml
+      - name: convertor-image-tag
+        value: latest
       - name: downloader-image-registry
         value: docker.io
       - name: downloader-image-repository
@@ -31,7 +37,7 @@ spec:
       - name: secretKey
         value: zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
       - name: bucketName
-        value: yarden
+        value: yarden-test
 
   templates:
     - name: entrypoint
@@ -63,6 +69,12 @@ spec:
               artifacts:
                 - name: processor-input
                   from: "{{steps.download.outputs.artifacts.processor-input}}"
+        - - name: convert-report-to-json
+            template: convertor
+            arguments:
+              artifacts:
+                - name: xml-report
+                  from: "{{steps.process.outputs.artifacts.xml-report}}"
 
     - name: lister
       container:
@@ -110,3 +122,16 @@ spec:
         artifacts:
           - name: xml-report
             path: /output/Managed/
+
+    - name: convertor
+      inputs:
+        artifacts:
+          - name: xml-report
+            path: /input/
+      container:
+        image: "{{workflow.parameters.convertor-image-registry}}/{{workflow.parameters.convertor-image-repository}}:{{workflow.parameters.convertor-image-tag}}"
+        workingDir: /input
+        command:
+          - sh
+          - -c
+          - xq .< "$(ls)"
