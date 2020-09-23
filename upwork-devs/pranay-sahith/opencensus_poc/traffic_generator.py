@@ -30,7 +30,8 @@ class TrafficGenerator:
         urls = set([pdf.get("href") for pdf in pdfs])
         log.info("downloading {} pdfs".format(len(urls)))
         for url in urls:
-            with urllib.request.urlopen(url) as f:
+            req = urllib.request.Request(url)
+            with urllib.request.urlopen(req) as f:
                 log.info(f"downloading pdf: {url}")
                 pdf_content = f.read()
                 with open(url.split("/")[-1], "wb") as f_writer:
