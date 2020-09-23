@@ -1,0 +1,18 @@
+---
+clusterName: "elasticsearch"
+nodeGroup: "master"
+
+roles:
+  master: "true"
+  ingest: "true"
+  data: "true"
+
+replicas: 1
+minimumMasterNodes: 1
+
+volumeClaimTemplate:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: nfs
+  resources:
+    requests:
+      storage: 10Gi

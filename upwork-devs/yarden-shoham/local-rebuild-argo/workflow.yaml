@@ -1,0 +1,112 @@
+apiVersion: argoproj-io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: local-rebuild-
+spec:
+  entrypoint: entrypoint
+  arguments:
+    parameters:
+      - name: processor-image-registry
+        value: docker.io
+      - name: processor-image-repository
+        value: yardenshoham/glasswall-rebuild-eval
+      - name: processor-image-tag
+        value: process-mode-0
+      - name: downloader-image-registry
+        value: docker.io
+      - name: downloader-image-repository
+        value: yardenshoham/local-rebuild-downloader
+      - name: downloader-image-tag
+        value: latest
+      - name: lister-image-registry
+        value: docker.io
+      - name: lister-image-repository
+        value: yardenshoham/local-rebuild-argo-lister
+      - name: lister-image-tag
+        value: latest
+      - name: endpoint
+        value: play.min.io
+      - name: accessKey
+        value: Q3AM3UQ867SPQQA43P2F
+      - name: secretKey
+        value: zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
+      - name: bucketName
+        value: yarden
+
+  templates:
+    - name: entrypoint
+      steps:
+        - - name: list
+            template: lister
+        - - name: run
+            template: runner
+            arguments:
+              parameters:
+                - name: objectName
+                  value: "{{item}}"
+            withParam: "{{steps.list.outputs.result}}"
+
+    - name: runner
+      inputs:
+        parameters:
+          - name: objectName
+      steps:
+        - - name: download
+            template: downloader
+            arguments:
+              parameters:
+                - name: objectName
+                  value: "{{inputs.parameters.objectName}}"
+        - - name: process
+            template: processor
+            arguments:
+              artifacts:
+                - name: processor-input
+                  from: "{{steps.download.outputs.artifacts.processor-input}}"
+
+    - name: lister
+      container:
+        image: "{{workflow.parameters.lister-image-registry}}/{{workflow.parameters.lister-image-repository}}:{{workflow.parameters.lister-image-tag}}"
+        env:
+          - name: ENDPOINT
+            value: "{{workflow.parameters.endpoint}}"
+          - name: ACCESS_KEY
+            value: "{{workflow.parameters.accessKey}}"
+          - name: SECRET_KEY
+            value: "{{workflow.parameters.secretKey}}"
+          - name: BUCKET_NAME
+            value: "{{workflow.parameters.bucketName}}"
+
+    - name: downloader
+      inputs:
+        parameters:
+          - name: objectName
+      container:
+        image: "{{workflow.parameters.downloader-image-registry}}/{{workflow.parameters.downloader-image-repository}}:{{workflow.parameters.downloader-image-tag}}"
+        env:
+          - name: ENDPOINT
+            value: "{{workflow.parameters.endpoint}}"
+          - name: ACCESS_KEY
+            value: "{{workflow.parameters.accessKey}}"
+          - name: SECRET_KEY
+            value: "{{workflow.parameters.secretKey}}"
+          - name: BUCKET_NAME
+            value: "{{workflow.parameters.bucketName}}"
+          - name: OBJECT_NAME
+            value: "{{inputs.parameters.objectName}}"
+      outputs:
+        artifacts:
+          - name: processor-input
+            path: /output/
+
+    - name: processor
+      inputs:
+        artifacts:
+          - name: processor-input
+            path: /input/
+      container:
+        image: "{{workflow.parameters.processor-image-registry}}/{{workflow.parameters.processor-image-repository}}:{{workflow.parameters.processor-image-tag}}"
+      outputs:
+        artifacts:
+          - name: xml-report
+            path: /output/Managed/

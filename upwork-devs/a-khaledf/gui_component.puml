@@ -1,0 +1,26 @@
+@startuml
+!include <c4/C4_Component.puml>  
+
+title Glass Wall Traffic Generator GUI Component Overview
+
+Person(tester, "Glass Wall QA", "test the functionality and performance of the system")
+
+System_Boundary(c0, "Traffic Generator") {
+    Container(user_pod, Pod, "python pyppeteer", "pod that acts as a user")
+    Container(controller, Controller, "python", "K8 Controller responsible for spawning pods")
+
+    Container_Boundary(c1, "GUI") {
+        Component(react_component, "react", "Javascript", "upload Interface")
+        Component(file_saver, "File Saver", "Javascript", "Save file to Disk")
+    }
+}
+
+System(website, "glasswall.com", "glass wall website")
+
+Rel(tester, react_component, "Upload Files")
+Rel_Left(react_component, file_saver, "Files")
+Rel_Up(controller, file_saver, "Files")
+Rel_Right(controller, user_pod, "spawn one or multiple Pods with files")
+Rel(user_pod, website, "Open Pages, Follow Links, Download and Upload files")
+
+@enduml

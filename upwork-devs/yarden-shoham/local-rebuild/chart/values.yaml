@@ -1,0 +1,22 @@
+processor:
+  image:
+    registry: docker.io
+    repository: yardenshoham/glasswall-rebuild-eval
+    tag: process-mode-0
+
+downloader:
+  image:
+    registry: docker.io
+    repository: yardenshoham/local-rebuild-downloader
+    tag: latest
+
+dispatcher:
+  image:
+    registry: docker.io
+    repository: yardenshoham/local-rebuild-dispatcher
+    tag: latest
+
+endpoint: play.min.io
+accessKey: Q3AM3UQ867SPQQA43P2F
+secretKey: zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
+bucketName: 2063b651-92a3-4a20-a4a5-03a96e7c5a89
