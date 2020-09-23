@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: denver 
+  labels:
+    app: denver
+spec:
+  replicas: 300
+  selector:
+    matchLabels:
+      app: denver
+  template:
+    metadata:
+      labels:
+        app: denver
+    spec:
+      containers:
+      - name: denver
+        image: alpine:3.12
+        resources:
+          requests:
+            memory: "20Mi"
+            cpu: "5m"
+          limits:
+            memory: "20Mi"
+            cpu: "5m"        
+        command: [ "sh", "-c"]
+        args:
+        - while true; do
+            echo -en '\n';
+            date;
+            printenv MY_POD_NAME;
+            sleep 5;
+          done;
+        env:
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name          
+        ports:
+        - containerPort: 80
