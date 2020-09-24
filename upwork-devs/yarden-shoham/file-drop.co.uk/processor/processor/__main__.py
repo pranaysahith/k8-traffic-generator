@@ -6,8 +6,7 @@ jwt_token = os.getenv("API_TOKEN")
 url = os.getenv("API_URL")
 target = os.getenv("TARGET")
 
-req = urllib.request.Request(target)
-local_filename, _ = urllib.request.urlretrieve(url)
+local_filename, _ = urllib.request.urlretrieve(target)  # nosec
 
 # Send a file to Glasswall's Rebuild API
 with open(local_filename, "rb") as f:
