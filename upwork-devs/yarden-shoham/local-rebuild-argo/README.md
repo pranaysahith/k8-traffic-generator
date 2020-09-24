@@ -42,7 +42,7 @@ Several parameters may be specified for configuration:
 | `endpoint`                    | S3 endpoint                 | `play.min.io`                              |
 | `accessKey`                   | S3 access key               | `Q3AM3UQ867SPQQA43P2F`                     |
 | `secretKey`                   | S3 secret key               | `zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG` |
-| `bucketName`                  | S3 bucket name              | `yarden`                                   |
+| `bucketName`                  | S3 bucket name              | `yarden-test`                              |
 
 To apply configuration, create a yaml file:
 
