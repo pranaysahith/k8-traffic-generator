@@ -28,16 +28,16 @@ kubectl create -f workflow.yaml -n argo
 
 Several parameters may be specified for configuration:
 
-| Parameter            | Description        | Default                                    |
-| -------------------- | ------------------ | ------------------------------------------ |
-| `imageRegistry`      | Image registry     | `docker.io`                                |
-| `endpoint`           | S3 endpoint        | `play.min.io`                              |
-| `accessKey`          | S3 access key      | `Q3AM3UQ867SPQQA43P2F`                     |
-| `secretKey`          | S3 secret key      | `zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG` |
-| `bucketName`         | S3 bucket name     | `yarden-test`                              |
-| `elasticsearchHost`  | Elasticsearch host | `host.docker.internal`                     |
-| `elasticsearchPort`  | S3 bucket name     | `9200`                                     |
-| `elasticsearchIndex` | S3 bucket name     | `reports`                                  |
+| Parameter            | Description         | Default                                    |
+| -------------------- | ------------------- | ------------------------------------------ |
+| `imageRegistry`      | Image registry      | `docker.io`                                |
+| `endpoint`           | S3 endpoint         | `play.min.io`                              |
+| `accessKey`          | S3 access key       | `Q3AM3UQ867SPQQA43P2F`                     |
+| `secretKey`          | S3 secret key       | `zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG` |
+| `bucketName`         | S3 bucket name      | `yarden-test`                              |
+| `elasticsearchHost`  | Elasticsearch host  | `host.docker.internal`                     |
+| `elasticsearchPort`  | Elasticsearch port  | `9200`                                     |
+| `elasticsearchIndex` | Elasticsearch index | `reports`                                  |
 
 To apply configuration, create a yaml file:
 
