@@ -31,7 +31,7 @@ class TrafficGenerator:
         log.info("downloading {} pdfs".format(len(urls)))
         for url in urls:
             req = urllib.request.Request(url)
-            with urllib.request.urlopen(req) as f:
+            with urllib.request.urlopen(req) as f: #nosec
                 log.info(f"downloading pdf: {url}")
                 pdf_content = f.read()
                 with open(url.split("/")[-1], "wb") as f_writer:
