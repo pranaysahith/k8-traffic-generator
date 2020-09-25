@@ -86,7 +86,7 @@ _____
 
 # How to create AMI (Amazon Machine Image) for traffic-generator and other services (ex: JMeter)
 
-## Simpley replace pre requirements and service installation steps (JMeter in this case) in run-instances-skeleton.json, UserData section:
+## Simply replace pre requirements and service installation steps (JMeter in this case) in run-instances-skeleton.json, UserData section:
 
 ```
 sudo apt-get update
