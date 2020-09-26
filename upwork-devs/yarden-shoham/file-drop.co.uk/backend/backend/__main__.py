@@ -90,4 +90,4 @@ def upload():
 
 if __name__ == '__main__':
     config.load_incluster_config()
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0')  # nosec

@@ -20,4 +20,4 @@ class Helper:
         d = DIR + "/" + "_".join(d.split(" "))
         if not os.path.exists(DIR):
             os.makedirs(DIR)
-        urllib.request.urlretrieve(url, d)
+        urllib.request.urlretrieve(url, d)  # nosec
