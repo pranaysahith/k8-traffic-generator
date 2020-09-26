@@ -1,0 +1,24 @@
+{
+    "DryRun": false,
+    "ImageId": "BASE_IMAGEID",
+    "KeyName": "KEY_NAME",
+    "SecurityGroups": [
+        "SECURITY_GROUP"
+    ],
+    "TagSpecifications": [
+        {
+            "ResourceType": "instance",
+            "Tags": [
+                {
+                    "Key": "Name",
+                    "Value": "INSTANCE_NAME"
+                }
+            ]
+        }
+    ],
+    "UserData": "#!/bin/bash -xe \n exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1 \n apt update \n apt install apt-transport-https docker.io -y \n systemctl start docker \n systemctl enable docker \n swapon -s \n swapoff -a \n sudo shutdown -h now",
+    "InstanceType": "INSTANCE_TYPE",
+    "Monitoring": {
+        "Enabled": true
+    }
+}

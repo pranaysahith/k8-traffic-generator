@@ -1,0 +1,7 @@
+{
+    "Description": "gw-ami-test",
+    "DryRun": false,
+    "InstanceId": "INSTANCE_ID",
+    "Name": "AMI_NAME",
+    "NoReboot": true
+}
