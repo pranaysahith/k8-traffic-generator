@@ -77,7 +77,7 @@ class TrafficGenerator():
     def save_file(self, file_url):
         try:
             log.info(f"saving file {file_url}")
-            res = requests.get(file_url, verify=False)
+            res = requests.get(file_url, verify=True) # Use verify=False when using self-signed certificates
             with open(file_url.split("/")[-1], "wb") as f:
                 f.write(res.content)
         except Exception as e:
